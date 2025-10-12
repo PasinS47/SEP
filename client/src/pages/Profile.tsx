@@ -38,6 +38,7 @@ export default function Profile({
                 src={profile.picture}
                 alt={profile.name}
                 className="rounded-full mx-auto w-24 h-24"
+                referrerPolicy="no-referrer"
             />
             <h2 className="text-xl font-semibold mt-4">{profile.name}</h2>
             <p className="text-gray-600">{profile.email}</p>
