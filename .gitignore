@@ -25,10 +25,10 @@ client/.env
 client/.DS_Store
 
 # --- Backend (Elysia / Bun) ---
-backend/node_modules/
-backend/dist/
-backend/.env
-backend/.DS_Store
+server/node_modules/
+server/dist/
+server/.env
+server/.DS_Store
 
 # --- Logs ---
 *.log
