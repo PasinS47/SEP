@@ -16,6 +16,7 @@ const users = new Map<string, User>()
 
 const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173"
 const JWT_SECRET = process.env.JWT_SECRET || "super_secret_key_12345"
+const NODE_ENV = process.env.NODE_ENV || "development"
 
 const app = new Elysia()
     .use(
@@ -24,6 +25,7 @@ const app = new Elysia()
             credentials: true,
             methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
             allowedHeaders: ["Content-Type", "Authorization"],
+            exposeHeaders: ["Set-Cookie"]
         })
     )
     .use(cookie())
@@ -38,7 +40,7 @@ const app = new Elysia()
             Google: [
                 process.env.GOOGLE_OAUTH_CLIENT_ID!,
                 process.env.GOOGLE_OAUTH_CLIENT_SECRET!,
-                process.env.GOOGLE_OAUTH_REDIRECT_URI!,
+                process.env.GOOGLE_OAUTH_REDIRECT_URI!
             ]
         })
     )
@@ -54,7 +56,7 @@ const app = new Elysia()
     .get("/auth/google", ({ oauth2, redirect }) => {
         const url = oauth2.createURL("Google", ["openid", "email", "profile"]);
         url.searchParams.set("access_type", "offline");
-        url.searchParams.set("prompt", "consent");
+        url.searchParams.set("prompt", "select_account consent");
 
         return redirect(url.href);
     })
@@ -69,30 +71,32 @@ const app = new Elysia()
 
             const token = await oauth2.authorize("Google");
             const accessToken = token.accessToken();
-            const response = await fetch("https://www.googleapis.com/oauth2/v2/userinfo", {
+            const response = await fetch("https://openidconnect.googleapis.com/v1/userinfo", {
                 headers: {
                     Authorization: `Bearer ${accessToken}`
                 }
             })
             if(!response.ok) {
-                throw new Error("Failed to fetch user information")
+                console.error("❌ Google API error:", await response.text())
+                return redirect(`${FRONTEND_URL}/login?error=google_api_failed`)
             }
 
             const googleUser = await response.json()
-            let user = users.get(googleUser.id)
+            const userId = googleUser.sub || googleUser.id
+            let user = users.get(userId)
             if (!user) {
                 user = {
-                    id: googleUser.id,
+                    id: userId,
                     email: googleUser.email,
                     name: googleUser.name,
                     picture: googleUser.picture,
                     createdAt: new Date()
                 }
-                users.set(googleUser.id, user)
+                users.set(userId, user)
                 console.log(`✅ New user registered: ${googleUser.name} (${googleUser.email})`)
             } else {
                 user.name = googleUser.name
-                user.picture = googleUser.picture
+                user.picture = googleUser.picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(googleUser.name)}`
                 users.set(googleUser.id, user)
                 console.log(`✅ User logged in: ${user.email}`)
             }
@@ -106,8 +110,9 @@ const app = new Elysia()
             cookie.auth.set({
                 value: authToken,
                 httpOnly: true,
-                secure: false,
-                sameSite: "lax",
+                secure: NODE_ENV === "production",
+                sameSite: NODE_ENV === "production" ? "none" : "lax",
+                domain: NODE_ENV === "production" ? undefined : "localhost",
                 path: "/",
                 maxAge: 7 * 24 * 60 * 60, // 7 days
             })
