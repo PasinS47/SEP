@@ -1,17 +1,18 @@
 {
-  "name": "app",
-  "version": "1.0.50",
+  "name": "student-event-planner",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": ["server", "client"],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "bun run --watch src/index.ts"
-  },
-  "dependencies": {
-    "@bogeychan/elysia-oauth2": "^0.1.0",
-    "elysia": "latest",
-    "openid-client": "^6.8.1"
+    "dev": "concurrently -n \"SERVER,CLIENT\" -c \"bgBlue.bold,bgMagenta.bold\" \"bun run dev:server\" \"bun run dev:client\"",
+    "dev:server": "bun run --filter server dev",
+    "dev:client": "bun run --filter client dev",
+    "build": "bun run build:server && bun run build:client",
+    "build:server": "bun run --filter server build",
+    "build:client": "bun run --filter client build",
+    "install:all": "bun install"
   },
   "devDependencies": {
-    "bun-types": "latest"
-  },
-  "module": "src/index.js"
+    "concurrently": "^9.2.1"
+  }
 }
