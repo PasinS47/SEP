@@ -7,12 +7,13 @@ Users can sign in with Google OAuth2, view their profile, and log out securely u
 
 ## 🧱 Tech Stack
 
-| Layer      | Technology                                      |
-|------------|-------------------------------------------------|
-| Frontend   | React 18, Vite, TypeScript, TailwindCSS         |
-| Backend    | ElysiaJS, elysia-oauth2, JWT, Cookie-based auth |
-| Auth       | Google OAuth 2.0                                |
-| Database   | (temporary) in-memory `Map`                     |
+| Layer     | Technology                  |
+|-----------|-----------------------------|
+| Frontend  | React (Vite + TypeScript)   |
+| Backend   | ElysiaJS                    |
+| Auth      | Google OAuth 2.0            |
+| Session   | Cookie + JWT                |
+| Database  | (temporary) in-memory `Map` |
 
 ---
 
