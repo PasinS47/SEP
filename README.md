@@ -1,6 +1,6 @@
 # 🎓 Student Event Planner
 
-A full-stack web application built with **React + Vite + TypeScript (client)** and **ElysiaJS + Bun (server)**.  
+A full-stack web application built with **React + Vite + TypeScript (client)** and **ElysiaJS + Bun (server)**.
 Users can sign in with Google OAuth2, view their profile, and log out securely using JWT-based authentication.
 
 ---
@@ -35,7 +35,7 @@ bun install
 
 ---
 
-### ⚙️ Environment Variables 
+### ⚙️ Environment Variables
 **Backend** (`server/.env`)
 ```.dotenv
 GOOGLE_OAUTH_CLIENT_ID=your_google_client_id
@@ -89,9 +89,9 @@ student-event-planner/
 ├─ client/
 │  ├─ src/
 │  │  ├─ pages/          # Home, Login, Profile, Callback
-│  │  ├─ hooks/          # useUser.ts
+│  │  ├─ hooks/          # use-user.ts
 │  │  ├─ components/     # Navbar
-│  │  └─ App.tsx, main.tsx
+│  │  └─ app.tsx, main.tsx
 │  └─ .env
 ├─ backend/
 │  ├─ src/

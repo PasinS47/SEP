@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { fetchMe } from "../api.ts";
+import { fetchMe } from "@/lib/api.ts";
 
 export function useUser() {
     const [user, setUser] = useState<any>(null);
