@@ -196,6 +196,7 @@ const app = new Elysia()
                 return { error: "User not found" }
             }
 
+            set.status = 200;
             return {
                 success: true,
                 user: {

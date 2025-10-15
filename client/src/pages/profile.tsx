@@ -11,9 +11,10 @@ export default function Profile({user, setUser}: { user: any; setUser: (u: any) 
   const [profile, setProfile] = useState<any>(null);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [isLoggedOut, setIsLoggedOut] = useState(false);
 
   useEffect(() => {
-    if (!user) {
+    if (!user && !isLoggedOut) {
       toast.error("Please sign in first");
       navigate("/login");
       return;
@@ -26,6 +27,7 @@ export default function Profile({user, setUser}: { user: any; setUser: (u: any) 
   }, [user, navigate])
 
   const handleLogout = async () => {
+    setIsLoggedOut(true);
     setLoading(true);
     await logout();
     setUser(null);
@@ -34,14 +36,20 @@ export default function Profile({user, setUser}: { user: any; setUser: (u: any) 
     navigate("/");
   };
 
-  if (!profile) return <p className="text-center mt-10">Loading profile...</p>;
+  if (!user || !profile) {
+    return (
+      <div className="flex justify-center items-center min-h-[80vh] text-muted-foreground">
+        Loading profile...
+      </div>
+    );
+  }
 
   return (
     <div className="flex justify-center items-center min-h-[85vh] bg-background text-foreground">
       <Card className="w-[26rem] shadow-md border border-border bg-card">
         <CardHeader className="flex flex-col items-center space-y-2">
           <Avatar className="w-20 h-20">
-            <AvatarImage src={user.picture} alt={user.name} />
+            <AvatarImage src={user.picture} alt={user.name} referrerPolicy={"no-referrer"} />
             <AvatarFallback>{user.name[0]}</AvatarFallback>
           </Avatar>
           <CardTitle className="text-xl font-semibold mt-2">

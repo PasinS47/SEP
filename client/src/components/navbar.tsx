@@ -1,13 +1,19 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { logout } from "@/lib/api.ts";
+import {toast} from "sonner";
+import {useState} from "react";
 
 export function Navbar({user, setUser}: { user: any; setUser: (u: any) => void; }) {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const handleLogout = async () => {
+    setLoading(true);
     await logout();
     setUser(null);
+    setLoading(false);
+    toast.success("Logged out successfully");
     navigate("/");
   }
 
@@ -19,9 +25,11 @@ export function Navbar({user, setUser}: { user: any; setUser: (u: any) => void; 
       <div>
         {user ? (
           <div className="flex items-center gap-x-4">
-            <span className="text-sm text-foreground">{user.name}</span>
+            <Link className="text-sm text-foreground" to="/profile">
+              {user.name}
+            </Link>
             <Button variant="outline" size="sm" onClick={handleLogout}>
-              Logout
+              {loading ? "Logging out..." : "Logout"}
             </Button>
           </div>
         ) : (
