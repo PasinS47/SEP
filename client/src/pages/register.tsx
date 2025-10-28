@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { FcGoogle } from "react-icons/fc";
+import { useNavigate } from "react-router-dom";
 
 export default function Register() {
   const [name, setName] = useState("");
@@ -19,6 +20,8 @@ export default function Register() {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,7 +37,7 @@ export default function Register() {
       if (!res.success) throw new Error(res.error || "Registration failed");
 
       toast.success("Account created successfully! You can now log in.");
-      window.location.href = "/login";
+      setTimeout(() => navigate("/login"), 100);
     } catch (err: any) {
       toast.error(err.message || "Registration failed");
     } finally {
