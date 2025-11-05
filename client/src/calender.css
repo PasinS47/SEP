@@ -1,0 +1,37 @@
+#calendar_container {
+    /* background-color: rgba(250, 192, 0, 0.48); */
+}
+
+#add-event-box {
+    width: 15%;
+    height: 100px;
+    position: absolute;
+    z-index: 1;
+    background-color: rgb(212, 127, 255);
+    border-radius: 20px;
+    box-shadow: 1px 1px 4px #556cff;
+    text-align: center;
+    padding-left: 3px;
+    padding-right: 3px;
+
+}
+
+#cancel-but {
+    width: 40%;
+    height: 20px;
+    border-radius: 20px;
+    z-index: 1;
+    background-color: rgb(255, 0, 0);
+}
+#add-but {
+    width: 40%;
+    height: 20px;
+    border-radius: 20px;
+    z-index: 1;
+    background-color: rgb(9, 255, 0);
+}
+#inp{
+  z-index: 1;  
+  width: 100%;
+  background-color: rgb(97, 24, 255);
+}

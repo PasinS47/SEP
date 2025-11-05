@@ -3,6 +3,7 @@ import Home from "@/pages/home.tsx";
 import Login from "@/pages/login.tsx";
 import Profile from "@/pages/profile.tsx";
 import Callback from "@/pages/callback.tsx";
+import Calendar from "./pages/calendar";
 import { Navbar } from "@/components/navbar.tsx";
 import { useUser } from "@/hooks/use-user.ts";
 import { ThemeProvider } from "@/components/theme-provider.tsx";
@@ -21,6 +22,7 @@ export default function App() {
                     <Route path="/login" element={<Login />} />
                     <Route path="/auth/callback" element={<Callback reload={reload} />} />
                     <Route path="/profile" element={<Profile user={user} setUser={setUser}/>} />
+                    <Route path="/calendar" element={<Calendar/>} />
                 </Routes>
             </BrowserRouter>
         </ThemeProvider>
