@@ -19,81 +19,21 @@ export default function Calendar() {
     useEffect(() => {
         const b = document.getElementById('cancel-but')
         const c = document.getElementById('add-event-box')
+        const i = document.getElementById('add-but')
         if (!c) return
         if (!b) return
+        if (!i) return
+        i.addEventListener('click', () => {
+            alert('insert to DB')
+            //call fn to insert to DB (userID,date)
+            c.remove()
+            setisBoxshow(true)
+        })
         b.addEventListener('click', () => {
             c.remove()
-            console.log(isBoxshow)
             setisBoxshow(true)
         })
     }, [isBoxshow]);
-
-    // useEffect(() => {
-    //     if (!div_cn) return
-    //     if (!reg) return
-    //     const handle = (event: MouseEvent) => {
-
-    //         if (!isBoxshow) {
-    //             // reg.remove()
-    //             return
-    //         }
-    //         const clientX = event.clientX; // X-coordinate relative to the viewport
-    //         const clientY = event.clientY; // Y-coordinate relative to the viewport
-
-    //         reg.id = 'add-event-box'
-    //         cancel_butt.id = 'cancel-but'
-    //         cancel_butt.innerText = "cancel"
-    //         reg.style.left = `${clientX}px`
-    //         reg.style.top = `${clientY}px`
-
-
-    //         reg.appendChild(in_name)
-    //         reg.appendChild(cancel_butt)
-    //         div_cn.appendChild(reg)
-
-    //         setisBoxshow(false)
-    //     }
-    //     div_cn.addEventListener('click', handle);
-
-    //     return () => {
-    //         div_cn.removeEventListener("click", handle);
-    //     };
-
-    // }, [isBoxshow, select_day])
-
-    // if (!div_cn) return
-    // const handle = (event: MouseEvent) => {
-
-    //     if (!isBoxshow) {
-    //         // reg.remove()
-    //         return
-    //     }
-    //     const clientX = event.clientX; // X-coordinate relative to the viewport
-    //     const clientY = event.clientY; // Y-coordinate relative to the viewport
-
-    //     reg.id = 'add-event-box'
-    //     cancel_butt.id = 'cancel-but'
-    //     cancel_butt.innerText = "cancel"
-    //     reg.style.left = `${clientX}px`
-    //     reg.style.top = `${clientY}px`
-
-
-    //     reg.appendChild(in_name)
-    //     reg.appendChild(cancel_butt)
-    //     div_cn.appendChild(reg)
-
-    //     setisBoxshow(false)
-    // }
-    // div_cn.addEventListener('click', handle)
-    // function createAddEvent(date: String) {
-    //     const div_cn = document.getElementById("calendar_container")
-    //     const reg = document.createElement('div')
-    //     const in_name = document.createElement('input')
-    //     const cancel_butt = document.createElement('button')
-    //     if(!isBoxshow) return
-    //     document.getElementById("add-event-box")!.innerText = date
-    // }
-
     // const event_list = [
     //     //single
     //     { title: 'event 1', date: '2025-10-15' },
