@@ -22,7 +22,7 @@ export default function App() {
                     <Route path="/login" element={<Login />} />
                     <Route path="/auth/callback" element={<Callback reload={reload} />} />
                     <Route path="/profile" element={<Profile user={user} setUser={setUser}/>} />
-                    <Route path="/calendar" element={<Calendar/>} />
+                    <Route path="/calendar" element={<Calendar user={user} setUser={setUser}/>} />
                 </Routes>
             </BrowserRouter>
         </ThemeProvider>

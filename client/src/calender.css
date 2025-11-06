@@ -7,31 +7,36 @@
     height: 100px;
     position: absolute;
     z-index: 1;
-    background-color: rgb(212, 127, 255);
-    border-radius: 20px;
+    background-color: rgb(84, 84, 84);
+    border-radius: 10px;
     box-shadow: 1px 1px 4px #556cff;
     text-align: center;
-    padding-left: 3px;
-    padding-right: 3px;
+    padding-left: 1%;
+    padding-right: 1%;
 
 }
 
 #cancel-but {
     width: 40%;
-    height: 20px;
+    height: 30px;
     border-radius: 20px;
     z-index: 1;
     background-color: rgb(255, 0, 0);
 }
+
 #add-but {
     width: 40%;
-    height: 20px;
+    height: 30px;
     border-radius: 20px;
     z-index: 1;
     background-color: rgb(9, 255, 0);
 }
-#inp{
-  z-index: 1;  
-  width: 100%;
-  background-color: rgb(97, 24, 255);
+
+#inp {
+    z-index: 1;
+    width: 100%;
+    background-color: rgb(255, 255, 255);
+    margin-bottom: 10px;
+    color: black;
+    border-radius: 5px;
 }

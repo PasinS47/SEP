@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@fullcalendar/react": "^6.1.19",
-    "fullcalendar": "^6.1.19"
+    "fullcalendar": "^6.1.19",
+    "mysql2": "^3.15.3"
   }
 }

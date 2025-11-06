@@ -1,14 +1,22 @@
 import '../calender.css'
+import { fetchProfile, CalenAddEvent, CalenGetEvent } from "@/lib/api.ts";
+import { toast } from "sonner";
 import FullCalendar from '@fullcalendar/react'
 import interactionPlugin from '@fullcalendar/interaction';
 import dayGridPlugin from '@fullcalendar/daygrid' // a plugin!
-import { useEffect, useState } from 'react'
+import { useNavigate } from "react-router-dom";
+import { useEffect, useState, useRef, use } from 'react'
 
-export default function Calendar() {
+export default function Calendar({ user, setUser }: { user: any; setUser: (u: any) => void; }) {
+    const [profile, setProfile] = useState<any>(null);
+    const [isLoggedOut, setIsLoggedOut] = useState(false);
+    // const [loading, setLoading] = useState(false);
+
+    const navigate = useNavigate();
 
     const [isBoxshow, setisBoxshow] = useState(true);
-    const [select_day, setselect_day] = useState("");
-
+    const [event_list, setEvent_list] = useState([]);
+    const [st, setSt] = useState(true);
     const calendar_div = document.getElementById("calendar_container")
     const box = document.createElement('div')
     const input_event = document.createElement('input')
@@ -16,24 +24,30 @@ export default function Calendar() {
     const add_butt = document.createElement('button')
     const but_contain = document.createElement('div')
 
+
+
     useEffect(() => {
-        const b = document.getElementById('cancel-but')
-        const c = document.getElementById('add-event-box')
-        const i = document.getElementById('add-but')
-        if (!c) return
-        if (!b) return
-        if (!i) return
-        i.addEventListener('click', () => {
-            alert('insert to DB')
-            //call fn to insert to DB (userID,date)
-            c.remove()
-            setisBoxshow(true)
-        })
-        b.addEventListener('click', () => {
-            c.remove()
-            setisBoxshow(true)
-        })
-    }, [isBoxshow]);
+        if (!user && !isLoggedOut) {
+            toast.error("Please sign in first");
+            navigate("/login");
+            return;
+        }
+
+        (async () => {
+            const res = await fetchProfile();
+            if (res?.success) {
+                setProfile(res.user);
+                if (true) {
+                    const getE = await CalenGetEvent();
+                    setEvent_list(getE);
+                    setSt(false)
+                }
+
+            }
+            else navigate("/login");
+        })();
+
+    }, [st, user, navigate]);
     // const event_list = [
     //     //single
     //     { title: 'event 1', date: '2025-10-15' },
@@ -47,7 +61,6 @@ export default function Calendar() {
         if (!isBoxshow) return
         const X = event.pageX
         const Y = event.pageY
-        setselect_day(date)
 
         if (!box) return
         box.id = 'add-event-box'
@@ -57,7 +70,7 @@ export default function Calendar() {
 
         if (!input_event) return
         input_event.id = 'inp'
-        input_event.placeholder = "event"
+        input_event.placeholder = "Event name"
 
         if (!add_butt) return
         add_butt.id = "add-but"
@@ -79,7 +92,38 @@ export default function Calendar() {
         box.appendChild(but_contain)
         calendar_div.appendChild(box)
 
+
+        cancel_butt.onclick = () => {
+            const c = document.getElementById('add-event-box')
+            if (!c) return
+            c.remove()
+            setisBoxshow(true)
+            setSt(true)
+        }
+        add_butt.onclick = async () => {
+            const i = document.getElementById('add-but')
+            const c = document.getElementById('add-event-box')
+            const inp = document.getElementById('inp')
+            if (!i) return
+            if (!inp) return
+            if (!c) return
+            const addRes = await CalenAddEvent(inp.value, date);
+            if (!addRes.ok) {
+                //toast.error("connect fail!!")
+                return
+            }
+            const resData = await addRes.json()
+            if (resData.success) {
+
+                toast.message(resData.message);
+            }
+            toast.error(resData.error)
+            c.remove()
+            setisBoxshow(true)
+            setSt(true)
+        }
         setisBoxshow(false)
+
     }
     return (
 
@@ -90,13 +134,16 @@ export default function Calendar() {
                     initialView="dayGridMonth"
                     weekends={true}
                     height={"auto"}
-                    eventColor={"#ffb31bff"}
+                    eventColor={"#ff2e1bff"}
                     selectable={true}
                     eventOverlap={false}
                     displayEventTime={true}
-                    //events={event_list}
-                    dateClick={(info) => {
+                    events={event_list}
+                    dateClick={async (info) => {
                         createBox(info.jsEvent, info.dateStr)
+                        const getE = await CalenGetEvent();
+                        setEvent_list(getE)
+                        setSt(true)
                     }}
                 />
             </div>
