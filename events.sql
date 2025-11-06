@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Nov 06, 2025 at 05:47 AM
+-- Generation Time: Nov 06, 2025 at 10:18 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.0.28
 
@@ -31,19 +31,18 @@ CREATE TABLE `events` (
   `eventId` int(100) NOT NULL,
   `id` varchar(1000) NOT NULL,
   `eventName` varchar(100) NOT NULL,
-  `date` varchar(50) NOT NULL
+  `date` varchar(50) NOT NULL,
+  `end` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `events`
 --
 
-INSERT INTO `events` (`eventId`, `id`, `eventName`, `date`) VALUES
-(1447, '105455031157338342793', 'work', '2025-11-04'),
-(1448, '105455031157338342793', 'trip', '2025-11-04'),
-(1449, '105455031157338342793', 'Learn-SE', '2025-11-06'),
-(1450, '105455031157338342793', 'exam', '2025-11-27'),
-(1451, '105455031157338342793', 'exam-cpe333', '2025-11-27');
+INSERT INTO `events` (`eventId`, `id`, `eventName`, `date`, `end`) VALUES
+(1462, '105455031157338342793', 'continuous events', '2025-11-11', '2025-11-15'),
+(1463, '105455031157338342793', 'single event', '2025-11-19', 'select end'),
+(1464, '105455031157338342793', 'con', '2025-11-03', '2025-11-05');
 
 --
 -- Indexes for dumped tables
@@ -64,7 +63,7 @@ ALTER TABLE `events`
 -- AUTO_INCREMENT for table `events`
 --
 ALTER TABLE `events`
-  MODIFY `eventId` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1452;
+  MODIFY `eventId` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1465;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

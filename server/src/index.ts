@@ -3,7 +3,7 @@ import { cors } from "@elysiajs/cors"
 import { cookie } from "@elysiajs/cookie"
 import { jwt } from "@elysiajs/jwt"
 import { oauth2 } from "elysia-oauth2"
-import { SqlAddEvent,SqlGetEvent } from './sql'
+import { SqlAddEvent, SqlGetEvent } from './sql'
 
 interface User {
     id: string;
@@ -239,11 +239,12 @@ const app = new Elysia()
             }
             set.status = 200;
             //sql
-            const sql_op = await SqlAddEvent(payload.id as string, body.eventName, body.date)
+            const sql_op = await SqlAddEvent(payload.id as string, body.eventName, body.date, body.end)
+            // const sql_op = await SqlAddEvent("105455031157338342793", body.eventName, body.date, body.end)
             //console.log(sql_op)
             if (sql_op?.success) return sql_op
             return (sql_op)
-            // return { body }
+            return { body }
         } catch (error) {
             set.status = 401
             return { error: "Unauthorized" }
@@ -251,17 +252,18 @@ const app = new Elysia()
     }, {
         body: t.Object({
             eventName: t.String(),
-            date: t.String()
+            date: t.String(),
+            end: t.String()
         })
     })
     //get event api
-    .get("/api/getEvent",async ({jwt,cookie,set})=>{
+    .get("/api/getEvent", async ({ jwt, cookie, set }) => {
         const token = cookie.auth.value
         if (!token) {
             set.status = 401
             return { error: "Unauthorized" }
         }
-                try {
+        try {
             const payload = await jwt.verify(token)
             if (!payload || typeof payload !== "object" || !("id" in payload)) {
                 set.status = 401
@@ -275,6 +277,7 @@ const app = new Elysia()
             }
             set.status = 200;
             const event_list = SqlGetEvent(payload.id as string)
+            // const event_list = SqlGetEvent("105455031157338342793")
             return event_list
         } catch (error) {
             set.status = 401

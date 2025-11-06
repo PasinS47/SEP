@@ -10,6 +10,7 @@ import { useEffect, useState, useRef, use } from 'react'
 export default function Calendar({ user, setUser }: { user: any; setUser: (u: any) => void; }) {
     const [profile, setProfile] = useState<any>(null);
     const [isLoggedOut, setIsLoggedOut] = useState(false);
+    const [isSecondDate, setIsSecondDate] = useState(false);
     // const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();
@@ -17,6 +18,8 @@ export default function Calendar({ user, setUser }: { user: any; setUser: (u: an
     const [isBoxshow, setisBoxshow] = useState(true);
     const [event_list, setEvent_list] = useState([]);
     const [st, setSt] = useState(true);
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
     const calendar_div = document.getElementById("calendar_container")
     const box = document.createElement('div')
     const input_event = document.createElement('input')
@@ -37,11 +40,11 @@ export default function Calendar({ user, setUser }: { user: any; setUser: (u: an
             const res = await fetchProfile();
             if (res?.success) {
                 setProfile(res.user);
-                if (true) {
-                    const getE = await CalenGetEvent();
-                    setEvent_list(getE);
-                    setSt(false)
-                }
+            if (true) {
+                const getE = await CalenGetEvent();
+                setEvent_list(getE);
+                setSt(false)
+            }
 
             }
             else navigate("/login");
@@ -57,57 +60,58 @@ export default function Calendar({ user, setUser }: { user: any; setUser: (u: an
     //     //recursive
     //     //{ title: 'Recursive',startTime: '09:00',endTime: '17:00',daysOfWeek: [1],startRecur: '2025-10-01',endRecur: '2025-12-31'}
     // ]
+
     function createBox(event: MouseEvent, date: String) {
+
+
+        const parentBox = document.getElementById('event_box')
+        const cancel_butt = document.getElementById("cancel")
+        const add_butt = document.getElementById('add')
+        const checkBox = document.getElementById('ckbox')
+        const dateEnd = document.getElementById('date-end')
+        const startDateE = document.getElementById('st')
+        const endDateE = document.getElementById('ed')
+        const eventN = document.getElementById('txinp')
+
+        if (isSecondDate) {
+            endDateE!.innerText = date;
+        }
         if (!isBoxshow) return
-        const X = event.pageX
-        const Y = event.pageY
+        const X = event.pageX;
+        const Y = event.pageY;
 
-        if (!box) return
-        box.id = 'add-event-box'
-        box.style.left = `${X}px`
-        box.style.top = `${Y}px`
-        box.innerText = date
+        parentBox!.style.display = "flex";
+        parentBox!.style.top = `${Y}px`;
+        parentBox!.style.left = `${X}px`;
+        startDateE!.innerText = date;
 
-        if (!input_event) return
-        input_event.id = 'inp'
-        input_event.placeholder = "Event name"
+        checkBox!.onchange = (event) => {
+            if (event.target.checked) {
+                dateEnd!.style.display = "block";
+                setIsSecondDate(true);
+                return;
+            }
+            // tmpEnd = "";
+            endDateE!.innerText = "select end"
+            dateEnd!.style.display = "none"
 
-        if (!add_butt) return
-        add_butt.id = "add-but"
-        add_butt.innerText = "add"
+            setIsSecondDate(false);
 
-        if (!cancel_butt) return
-        cancel_butt.id = "cancel-but"
-        cancel_butt.innerText = "cancel"
-
-        if (!but_contain) return
-        but_contain.style.marginTop = "5px"
-        but_contain.style.display = "flex"
-        but_contain.style.justifyContent = "space-evenly"
-        but_contain.appendChild(add_butt)
-        but_contain.appendChild(cancel_butt)
-
-        if (!calendar_div) return
-        box.appendChild(input_event)
-        box.appendChild(but_contain)
-        calendar_div.appendChild(box)
-
-
-        cancel_butt.onclick = () => {
-            const c = document.getElementById('add-event-box')
-            if (!c) return
-            c.remove()
+        }
+        cancel_butt!.onclick = () => {
             setisBoxshow(true)
             setSt(true)
+            parentBox!.style.display = "none";
         }
-        add_butt.onclick = async () => {
-            const i = document.getElementById('add-but')
-            const c = document.getElementById('add-event-box')
-            const inp = document.getElementById('inp')
-            if (!i) return
-            if (!inp) return
-            if (!c) return
-            const addRes = await CalenAddEvent(inp.value, date);
+        add_butt!.onclick = async () => {
+            const eventName = eventN!.value;
+            const eventStart = startDateE!.textContent;
+            const eventEnd = endDateE!.textContent
+            if(eventName == "") {
+                toast.message("fill event name")
+                return
+            }
+            const addRes = await CalenAddEvent(eventName, eventStart, eventEnd);
             if (!addRes.ok) {
                 //toast.error("connect fail!!")
                 return
@@ -118,7 +122,7 @@ export default function Calendar({ user, setUser }: { user: any; setUser: (u: an
                 toast.message(resData.message);
             }
             toast.error(resData.error)
-            c.remove()
+            parentBox!.style.display = "none";
             setisBoxshow(true)
             setSt(true)
         }
@@ -142,10 +146,35 @@ export default function Calendar({ user, setUser }: { user: any; setUser: (u: an
                     dateClick={async (info) => {
                         createBox(info.jsEvent, info.dateStr)
                         const getE = await CalenGetEvent();
+                        // console.log(getE)
                         setEvent_list(getE)
                         setSt(true)
                     }}
                 />
+                <div id="event_box">
+                    <div id="date-container">
+                        <div id="date-start">
+                            <p>start</p>
+                            <p id="st"></p>
+                        </div>
+                        <div id="date-end">
+                            <p>end</p>
+                            <p id="ed">select end</p>
+                        </div>
+                    </div>
+                    <div id="input-container">
+                        <div id="ckbox-container">
+                            Continuous Event :
+                            <input type='checkbox' id="ckbox"></input>
+                        </div>
+
+                        <input type='text' id="txinp" placeholder='Event name'></input>
+                    </div>
+                    <div id="butt-container">
+                        <button className='butt' id="add">Add</button>
+                        <button className='butt' id="cancel">Cancel</button>
+                    </div>
+                </div>
             </div>
         </>
     )
