@@ -10,8 +10,8 @@ const connection = await mysql.createConnection({
 //Insert to Mysql DB
 export async function SqlAddEvent(id: string, eventName: string, date: string) {
     const sql = "INSERT INTO events (id,eventName,date) VALUES (?,?,?)"
-    const sql_c = "SELECT id From events WHERE id = ? AND date = ?"
-    const [rows_k] = await connection.execute(sql_c, [id, date])
+    const sql_c = "SELECT id From events WHERE id = ? AND eventName = ? AND date = ?"
+    const [rows_k] = await connection.execute(sql_c, [id, eventName, date])
     // console.log(rows_k.length)
     if (rows_k.length >= 1) return { error: "date already exits", success: false }
     const [rows] = await connection.execute(sql, [id, eventName, date])
