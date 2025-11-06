@@ -18,14 +18,7 @@ export default function Calendar({ user, setUser }: { user: any; setUser: (u: an
     const [isBoxshow, setisBoxshow] = useState(true);
     const [event_list, setEvent_list] = useState([]);
     const [st, setSt] = useState(true);
-    const [startDate, setStartDate] = useState("");
-    const [endDate, setEndDate] = useState("");
-    const calendar_div = document.getElementById("calendar_container")
-    const box = document.createElement('div')
-    const input_event = document.createElement('input')
-    const cancel_butt = document.createElement('button')
-    const add_butt = document.createElement('button')
-    const but_contain = document.createElement('div')
+
 
 
 
@@ -40,11 +33,11 @@ export default function Calendar({ user, setUser }: { user: any; setUser: (u: an
             const res = await fetchProfile();
             if (res?.success) {
                 setProfile(res.user);
-            if (true) {
-                const getE = await CalenGetEvent();
-                setEvent_list(getE);
-                setSt(false)
-            }
+                if (true) {
+                    const getE = await CalenGetEvent();
+                    setEvent_list(getE);
+                    setSt(false)
+                }
 
             }
             else navigate("/login");
@@ -81,10 +74,25 @@ export default function Calendar({ user, setUser }: { user: any; setUser: (u: an
         const Y = event.pageY;
 
         parentBox!.style.display = "flex";
-        parentBox!.style.top = `${Y}px`;
-        parentBox!.style.left = `${X}px`;
+        const screenWidth = window.innerWidth;
+        const screenHeigh = window.innerHeight;
+        // console.log(screenWidth)
+        if (screenWidth < 600) {
+            parentBox!.style.top = "90vh";
+            parentBox!.style.left = "auto";
+        } else {
+            if (screenWidth - X < 250) {
+                parentBox!.style.left = `${X - 300}px`;
+            } else {
+                parentBox!.style.left = `${X}px`;
+            }
+            if (screenHeigh - Y < 250) {
+                parentBox!.style.top = `${Y - 200}px`;
+            } else {
+                parentBox!.style.top = `${Y}px`;
+            }
+        }
         startDateE!.innerText = date;
-
         checkBox!.onchange = (event) => {
             if (event.target.checked) {
                 dateEnd!.style.display = "block";
@@ -107,7 +115,7 @@ export default function Calendar({ user, setUser }: { user: any; setUser: (u: an
             const eventName = eventN!.value;
             const eventStart = startDateE!.textContent;
             const eventEnd = endDateE!.textContent
-            if(eventName == "") {
+            if (eventName == "") {
                 toast.message("fill event name")
                 return
             }

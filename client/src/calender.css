@@ -1,5 +1,7 @@
 #calendar_container {
     /* background-color: rgba(250, 192, 0, 0.48); */
+    display: flex;
+    justify-content: center;
 }
 
 #event_box {
@@ -73,6 +75,7 @@
     width: 100%;
     background-color: rgb(255, 255, 255);
     z-index: 1;
+    padding-left: 5%;
     border: 2px black solid;
     color: black;
     border-radius: 10px;
@@ -85,4 +88,14 @@
 
 #date-end {
     display: none;
+}
+
+@media only screen and (max-width:600px) {
+
+    #event_box {
+        z-index: 1;
+        width: 90%;
+        top: auto;
+        left: auto;
+    }
 }
