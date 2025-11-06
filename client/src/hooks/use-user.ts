@@ -9,8 +9,11 @@ export function useUser() {
         setLoading(true);
         try {
             const res = await fetchMe();
-            if (res?.success) setUser(res.user);
-            else setUser(null);
+            if (res?.success) {
+                setUser(res.user);
+            } else {
+                setUser(null);
+            }
         } finally {
             setLoading(false);
         }
