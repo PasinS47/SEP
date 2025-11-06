@@ -116,7 +116,7 @@ const app = new Elysia()
         const authToken = await jwt.sign({
           id: user.id,
           email: user.email,
-          name: user.name,
+          name: user.name
         });
 
         cookie.auth.set({
@@ -126,7 +126,7 @@ const app = new Elysia()
           sameSite: NODE_ENV === "production" ? "none" : "lax",
           domain: NODE_ENV === "production" ? undefined : "localhost",
           path: "/",
-          maxAge: 7 * 24 * 60 * 60, // 7 days
+          maxAge: 2 * 60 * 60,
         });
 
         return redirect(`${FRONTEND_URL}/auth/callback`);
@@ -163,6 +163,22 @@ const app = new Elysia()
           error: "User not found",
         };
       }
+
+      const newToken = await jwt.sign({
+        id: user.id,
+        email: user.email,
+        name: user.name
+      });
+
+      cookie.auth.set({
+        value: newToken,
+        httpOnly: true,
+        secure: NODE_ENV === "production",
+        sameSite: NODE_ENV === "production" ? "none" : "lax",
+        domain: NODE_ENV === "production" ? undefined : "localhost",
+        path: "/",
+        maxAge: 2 * 60 * 60,
+      });
 
       return {
         success: true,
@@ -289,7 +305,7 @@ const app = new Elysia()
     const token = await jwt.sign({
         id: user.id,
         email: user.email,
-        name: user.name,
+        name: user.name
     });
 
     cookie.auth.set({
@@ -298,7 +314,7 @@ const app = new Elysia()
         secure: NODE_ENV === "production",
         sameSite: NODE_ENV === "production" ? "none" : "lax",
         path: "/",
-        maxAge: 7 * 24 * 60 * 60,
+        maxAge: 2 * 60 * 60,
     });
 
     return {
