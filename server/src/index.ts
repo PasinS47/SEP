@@ -18,6 +18,8 @@ const users = new Map<string, User>();
 const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
 const JWT_SECRET = process.env.JWT_SECRET || "super_secret_key_12345";
 const NODE_ENV = process.env.NODE_ENV || "development";
+const SESSION_EXPIRATION_MS = 5 * 60 * 1000;
+const SESSION_SPAN_MS = 24 * 60 * 60 * 1000;
 
 const app = new Elysia()
   .use(
@@ -26,7 +28,7 @@ const app = new Elysia()
       credentials: true,
       methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
       allowedHeaders: ["Content-Type", "Authorization"],
-      exposeHeaders: ["Set-Cookie"],
+      exposeHeaders: ["Set-Cookie", "X-Token-Warning", "X-Token-Remaining"],
     })
   )
   .use(cookie())
@@ -45,6 +47,46 @@ const app = new Elysia()
       ],
     })
   )
+  .onBeforeHandle(async ({ set, jwt, cookie}) => {
+    if(cookie.auth){
+      try {
+        const decoded = await jwt.verify(cookie.auth.value);
+        
+        if(!decoded.expires || decoded.expires === "0"){
+          return;
+        }
+
+        const expiration = new Date(JSON.parse(decoded.expires));
+        const diff = expiration.getTime() - (new Date()).getTime();
+        
+        if(diff < SESSION_EXPIRATION_MS && decoded.expires !== "0"){
+
+          console.log("There is ", Math.floor(diff / (1000)) , " seconds left until expiration.");
+          set.headers['X-Token-Warning'] = 'Session expiring soon';
+          set.headers['X-Token-Remaining'] = Math.floor(diff / 1000).toString();
+
+          const updatedTime = await jwt.sign({
+            id: decoded.id,
+            email: decoded.email,
+            name: decoded.name,
+            expires: "0",
+          });
+
+          cookie.auth.set({
+            value: updatedTime,
+            httpOnly: true,
+            secure: NODE_ENV === "production",
+            sameSite: NODE_ENV === "production" ? "none" : "lax",
+            domain: NODE_ENV === "production" ? undefined : "localhost",
+            path: "/",
+            maxAge: Math.floor(diff / 1000),
+          });
+        }
+      } catch (error) {
+        console.log("❌ Invalid token:", error);
+      }
+    }
+  })
   .get("/", () => ({
     message: "🎓 Student Event Planner API",
     status: "running",
@@ -116,7 +158,8 @@ const app = new Elysia()
         const authToken = await jwt.sign({
           id: user.id,
           email: user.email,
-          name: user.name
+          name: user.name,
+          expires: JSON.stringify(new Date(Date.now() + (SESSION_EXPIRATION_MS))),
         });
 
         cookie.auth.set({
@@ -126,7 +169,7 @@ const app = new Elysia()
           sameSite: NODE_ENV === "production" ? "none" : "lax",
           domain: NODE_ENV === "production" ? undefined : "localhost",
           path: "/",
-          maxAge: 2 * 60 * 60,
+          maxAge: SESSION_SPAN_MS / 1000,
         });
 
         return redirect(`${FRONTEND_URL}/auth/callback`);
@@ -164,21 +207,22 @@ const app = new Elysia()
         };
       }
 
-      const newToken = await jwt.sign({
-        id: user.id,
-        email: user.email,
-        name: user.name
-      });
+      // const newToken = await jwt.sign({
+      //   id: user.id,
+      //   email: user.email,
+      //   name: user.name,
+      //   expires: JSON.stringify(new Date(Date.now() + (60 * 1000))),
+      // });
 
-      cookie.auth.set({
-        value: newToken,
-        httpOnly: true,
-        secure: NODE_ENV === "production",
-        sameSite: NODE_ENV === "production" ? "none" : "lax",
-        domain: NODE_ENV === "production" ? undefined : "localhost",
-        path: "/",
-        maxAge: 2 * 60 * 60,
-      });
+      // cookie.auth.set({
+      //   value: newToken,
+      //   httpOnly: true,
+      //   secure: NODE_ENV === "production",
+      //   sameSite: NODE_ENV === "production" ? "none" : "lax",
+      //   domain: NODE_ENV === "production" ? undefined : "localhost",
+      //   path: "/",
+      //   maxAge: SESSION_SPAN_MS / 1000,
+      // });
 
       return {
         success: true,
@@ -305,7 +349,8 @@ const app = new Elysia()
     const token = await jwt.sign({
         id: user.id,
         email: user.email,
-        name: user.name
+        name: user.name,
+        expires: JSON.stringify(new Date(Date.now() + (SESSION_SPAN_MS))),
     });
 
     cookie.auth.set({
@@ -314,7 +359,7 @@ const app = new Elysia()
         secure: NODE_ENV === "production",
         sameSite: NODE_ENV === "production" ? "none" : "lax",
         path: "/",
-        maxAge: 2 * 60 * 60,
+        maxAge: SESSION_SPAN_MS / 1000,
     });
 
     return {
