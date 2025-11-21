@@ -1,5 +1,5 @@
 import '../calender.css'
-import { fetchProfile, CalenAddEvent, CalenGetEvent } from "@/lib/api.ts";
+import { fetchProfile, CalenAddEvent, CalenGetEvent, delEvent } from "@/lib/api.ts";
 import { toast } from "sonner";
 import FullCalendar from '@fullcalendar/react'
 import interactionPlugin from '@fullcalendar/interaction';
@@ -18,7 +18,7 @@ export default function Calendar({ user, setUser }: { user: any; setUser: (u: an
     const [isBoxshow, setisBoxshow] = useState(true);
     const [event_list, setEvent_list] = useState([]);
     const [st, setSt] = useState(true);
-
+    const [Dst, setDSt] = useState(true);
 
 
 
@@ -33,17 +33,30 @@ export default function Calendar({ user, setUser }: { user: any; setUser: (u: an
             const res = await fetchProfile();
             if (res?.success) {
                 setProfile(res.user);
-                if (true) {
-                    const getE = await CalenGetEvent();
-                    setEvent_list(getE);
-                    setSt(false)
-                }
-
             }
             else navigate("/login");
         })();
 
-    }, [st, user, navigate]);
+    }, [user, navigate]);
+    useEffect(() => {
+        (async () => {
+            if (st) {
+                const getE = await CalenGetEvent();
+                setEvent_list(getE);
+                setSt(false)
+                console.log(getE)
+            }
+        })();
+    }, [st])
+    // useEffect(() => {
+    //     event_list.forEach(element => {
+    //         const s = document.getElementById(element.start)
+    //         if(!s) return
+    //         s!.onclick = () =>{
+    //             console.log(s!.start)
+    //         }
+    //     });
+    // }, [event_list])
     // const event_list = [
     //     //single
     //     { title: 'event 1', date: '2025-10-15' },
@@ -70,6 +83,7 @@ export default function Calendar({ user, setUser }: { user: any; setUser: (u: an
             endDateE!.innerText = date;
         }
         if (!isBoxshow) return
+        setDSt(false)
         const X = event.pageX;
         const Y = event.pageY;
 
@@ -110,6 +124,7 @@ export default function Calendar({ user, setUser }: { user: any; setUser: (u: an
             setisBoxshow(true)
             setSt(true)
             parentBox!.style.display = "none";
+            setDSt(true)
         }
         add_butt!.onclick = async () => {
             const eventName = eventN!.value;
@@ -133,8 +148,55 @@ export default function Calendar({ user, setUser }: { user: any; setUser: (u: an
             parentBox!.style.display = "none";
             setisBoxshow(true)
             setSt(true)
+            setDSt(true)
         }
         setisBoxshow(false)
+
+    }
+    function hadleClickEvent(e) {
+        const title = e.event.title
+        const date1 = e.event.start
+        date1.setDate(date1.getDate() + 1);
+        const date = date1.toISOString().split('T')[0]
+        if (!Dst) return
+        const box = document.getElementById('deleteBox')
+        const buttD = document.getElementById('delE')
+        const buttC = document.getElementById('delC')
+        const content = document.getElementById('deti')
+        if (!box) return
+        if (!buttD) return
+        if (!buttC) return
+        if (!content) return
+        box.style.display = "flex"
+        const X = e.jsEvent.pageX;
+        const Y = e.jsEvent.pageY;
+        box!.style.left = `${X}px`;
+        box!.style.top = `${Y}px`;
+        content!.innerText = e.event.title
+        setDSt(false)
+        setisBoxshow(false)
+        buttC.onclick = () => {
+            box!.style.display = "none"
+            setDSt(true)
+            setisBoxshow(true)
+        }
+        buttD.onclick = async () => {
+            const res = await delEvent(title, date)
+            if (!res.ok) {
+                toast.error('connection faild')
+                return
+            }
+            const data = await res.json()
+            if (!data.success) {
+                toast.error('delete faild')
+                return
+            }
+            toast.message('delete successfully')
+            box!.style.display = "none"
+            setDSt(true)
+            setisBoxshow(true)
+            setSt(true)
+        }
 
     }
     return (
@@ -157,7 +219,9 @@ export default function Calendar({ user, setUser }: { user: any; setUser: (u: an
                         // console.log(getE)
                         setEvent_list(getE)
                         setSt(true)
+
                     }}
+                    eventClick={hadleClickEvent}
                 />
                 <div id="event_box">
                     <div id="date-container">
@@ -182,6 +246,11 @@ export default function Calendar({ user, setUser }: { user: any; setUser: (u: an
                         <button className='butt' id="add">Add</button>
                         <button className='butt' id="cancel">Cancel</button>
                     </div>
+                </div>
+                <div id="deleteBox">
+                    <p id="deti"></p>
+                    <button id="delE">Delete</button>
+                    <button id="delC">cancel</button>
                 </div>
             </div>
         </>

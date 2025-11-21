@@ -46,3 +46,15 @@ export async function CalenGetEvent() {
     })
     return response.json()
 }
+export async function delEvent(title:string,date:string){
+    const data = {title:title,date:date}
+const response = await fetch(`${API_URL}/api/delEvent`, {
+        method:"POST",
+        credentials: "include",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data)
+    })
+    return response
+}

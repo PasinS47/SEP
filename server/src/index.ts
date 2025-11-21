@@ -3,7 +3,7 @@ import { cors } from "@elysiajs/cors"
 import { cookie } from "@elysiajs/cookie"
 import { jwt } from "@elysiajs/jwt"
 import { oauth2 } from "elysia-oauth2"
-import { SqlAddEvent, SqlGetEvent } from './sql'
+import { SqlAddEvent, SqlGetEvent,SqlDelEvent } from './sql'
 
 interface User {
     id: string;
@@ -242,11 +242,10 @@ const app = new Elysia()
             const sql_op = await SqlAddEvent(payload.id as string, body.eventName, body.date, body.end)
             // const sql_op = await SqlAddEvent("105455031157338342793", body.eventName, body.date, body.end)
             //console.log(sql_op)
-            if (sql_op?.success) return sql_op
             return (sql_op)
-            return { body }
         } catch (error) {
             set.status = 401
+            console.log(error)
             return { error: "Unauthorized" }
         }
     }, {
@@ -283,6 +282,39 @@ const app = new Elysia()
             set.status = 401
             return { error: "Unauthorized" }
         }
+    })
+    .post("/api/delEvent", async ({ body,jwt, cookie, set }) => {
+        const token = cookie.auth.value
+        if (!token) {
+            set.status = 401
+            return { error: "Unauthorized" }
+        }
+                try {
+            const payload = await jwt.verify(token)
+            if (!payload || typeof payload !== "object" || !("id" in payload)) {
+                set.status = 401
+                return { error: "Invalid token" }
+            }
+
+            const user = users.get(payload.id as string)
+            if (!user) {
+                set.status = 404
+                return { error: "User not found" }
+            }
+            set.status = 200;
+            //sql
+            const sql_op = await SqlDelEvent(payload.id as string, body.title, body.date)
+            return (sql_op)
+        } catch (error) {
+            set.status = 401
+            console.log(error)
+            return { error: "Unauthorized" }
+        }
+    }, {
+        body: t.Object({
+            title: t.String(),
+            date: t.String()
+        })
     })
     .listen(3000);
 

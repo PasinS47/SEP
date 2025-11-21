@@ -3,7 +3,7 @@ const connection = await mysql.createConnection({
     host: "localhost",
     user: "root",
     password: "",
-    database: "Student_planner",
+    database: "student_planner",
     port: 3306,
 });
 
@@ -28,10 +28,10 @@ export async function SqlGetEvent(id: string) {
 
         for (let d in row) {
             if (row[d].end !== 'select end') {
-                event_json_e = { title: row[d].eventName, start: row[d].date, end: row[d].end };
+                event_json_e = { id:row[d].eventName+row[d].date,title: row[d].eventName, start: row[d].date, end: row[d].end };
                 event_array.push(event_json_e);
             } else {
-                event_json = { title: row[d].eventName, date: row[d].date }
+                event_json = { id:row[d].eventName+row[d].date,title: row[d].eventName, date: row[d].date }
                 event_array.push(event_json)
             }
 
@@ -43,4 +43,19 @@ export async function SqlGetEvent(id: string) {
         return error
     }
 
+}
+export async function SqlDelEvent(id:string,title:string,date:string){
+    const sql = "DELETE FROM events WHERE id = ? AND eventName = ? AND date = ?"
+        try {
+        const [row] = await connection.execute(sql, [id,title,date])
+        console.log(row)
+        console.log(`${id} ${title} ${date}`)
+        if(row.affectedRows == 1){
+            return {success:true,message:'delete success'}
+        }    
+        return {success:false,error:'delete faild'}
+    } catch (error) {
+        console.log(error)
+        return error
+    }
 }
