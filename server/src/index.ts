@@ -3,7 +3,7 @@ import { cors } from "@elysiajs/cors"
 import { cookie } from "@elysiajs/cookie"
 import { jwt } from "@elysiajs/jwt"
 import { oauth2 } from "elysia-oauth2"
-import { SqlAddEvent, SqlGetEvent,SqlDelEvent } from './sql'
+import { SqlAddEvent, SqlGetEvent, SqlDelEvent ,checkVisited,createLink,getGroupEvent} from './sql'
 import { hash, compare } from "bcryptjs";
 
 interface User {
@@ -48,21 +48,21 @@ const app = new Elysia()
       ],
     })
   )
-  .onBeforeHandle(async ({ set, jwt, cookie}) => {
-    if(cookie.auth){
+  .onBeforeHandle(async ({ set, jwt, cookie }) => {
+    if (cookie.auth) {
       try {
         const decoded = await jwt.verify(cookie.auth.value);
-        
-        if(!decoded.expires || decoded.expires === "0"){
+
+        if (!decoded.expires || decoded.expires === "0") {
           return;
         }
 
         const expiration = new Date(JSON.parse(decoded.expires));
         const diff = expiration.getTime() - (new Date()).getTime();
-        
-        if(diff < SESSION_EXPIRATION_MS && decoded.expires !== "0"){
 
-          console.log("There is ", Math.floor(diff / (1000)) , " seconds left until expiration.");
+        if (diff < SESSION_EXPIRATION_MS && decoded.expires !== "0") {
+
+          console.log("There is ", Math.floor(diff / (1000)), " seconds left until expiration.");
           set.headers['X-Token-Warning'] = 'Session expiring soon';
           set.headers['X-Token-Remaining'] = Math.floor(diff / 1000).toString();
 
@@ -293,32 +293,32 @@ const app = new Elysia()
   })
   .post("/api/auth/register", async ({ body, set }) => {
     const { email, password, name } = body as {
-        email?: string;
-        password?: string;
-        name?: string;
+      email?: string;
+      password?: string;
+      name?: string;
     };
 
     if (!email || !password || !name) {
-        set.status = 400;
-        return { success: false, error: "Missing fields" };
+      set.status = 400;
+      return { success: false, error: "Missing fields" };
     }
 
     // check if already exist
     for (const u of users.values()) {
-        if (u.email === email) {
-            set.status = 409;
-            return { success: false, error: "Email already registered" };
-        }
+      if (u.email === email) {
+        set.status = 409;
+        return { success: false, error: "Email already registered" };
+      }
     }
 
     const id = crypto.randomUUID();
     const hashed = await hash(password, 10);
     const user: User = {
-        id,
-        email,
-        name,
-        picture: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}`,
-        createdAt: new Date(),
+      id,
+      email,
+      name,
+      picture: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}`,
+      createdAt: new Date(),
     };
 
     // store password in separated map
@@ -329,149 +329,235 @@ const app = new Elysia()
     return { success: true, message: "User registered" };
 
   })
-    //insert event api
-    .post("/api/addEvent", async ({ jwt, cookie, set, body }) => {
-        const token = cookie.auth.value
-        if (!token) {
-            set.status = 401
-            return { error: "Unauthorized" }
-        }
-        try {
-            const payload = await jwt.verify(token)
-            if (!payload || typeof payload !== "object" || !("id" in payload)) {
-                set.status = 401
-                return { error: "Invalid token" }
-            }
+  //insert event api
+  .post("/api/addEvent", async ({ jwt, cookie, set, body }) => {
+    const token = cookie.auth.value
+    if (!token) {
+      set.status = 401
+      return { error: "Unauthorized" }
+    }
+    try {
+      const payload = await jwt.verify(token)
+      if (!payload || typeof payload !== "object" || !("id" in payload)) {
+        set.status = 401
+        return { error: "Invalid token" }
+      }
 
-            const user = users.get(payload.id as string)
-            if (!user) {
-                set.status = 404
-                return { error: "User not found" }
-            }
-            set.status = 200;
-            //sql
-            const sql_op = await SqlAddEvent(payload.id as string, body.eventName, body.date, body.end)
-            // const sql_op = await SqlAddEvent("105455031157338342793", body.eventName, body.date, body.end)
-            //console.log(sql_op)
-            return (sql_op)
-        } catch (error) {
-            set.status = 401
-            console.log(error)
-            return { error: "Unauthorized" }
-        }
-    }, {
-        body: t.Object({
-            eventName: t.String(),
-            date: t.String(),
-            end: t.String()
-        })
+      const user = users.get(payload.id as string)
+      if (!user) {
+        set.status = 404
+        return { error: "User not found" }
+      }
+      set.status = 200;
+      //sql
+      const sql_op = await SqlAddEvent(payload.id as string, body.eventName, body.date, body.end)
+      // const sql_op = await SqlAddEvent("105455031157338342793", body.eventName, body.date, body.end)
+      //console.log(sql_op)
+      return (sql_op)
+    } catch (error) {
+      set.status = 401
+      console.log(error)
+      return { error: "Unauthorized" }
+    }
+  }, {
+    body: t.Object({
+      eventName: t.String(),
+      date: t.String(),
+      end: t.String()
     })
-    //get event api
-    .get("/api/getEvent", async ({ jwt, cookie, set }) => {
-        const token = cookie.auth.value
-        if (!token) {
-            set.status = 401
-            return { error: "Unauthorized" }
-        }
-        try {
-            const payload = await jwt.verify(token)
-            if (!payload || typeof payload !== "object" || !("id" in payload)) {
-                set.status = 401
-                return { error: "Invalid token" }
-            }
+  })
+  //get event api
+  .get("/api/getEvent", async ({ jwt, cookie, set }) => {
+    const token = cookie.auth.value
+    if (!token) {
+      set.status = 401
+      return { error: "Unauthorized" }
+    }
+    try {
+      const payload = await jwt.verify(token)
+      if (!payload || typeof payload !== "object" || !("id" in payload)) {
+        set.status = 401
+        return { error: "Invalid token" }
+      }
 
-            const user = users.get(payload.id as string)
-            if (!user) {
-                set.status = 404
-                return { error: "User not found" }
-            }
-            set.status = 200;
-            const event_list = SqlGetEvent(payload.id as string)
-            // const event_list = SqlGetEvent("105455031157338342793")
-            return event_list
-        } catch (error) {
-            set.status = 401
-            return { error: "Unauthorized" }
-        }
-    })
-    .post("/api/delEvent", async ({ body,jwt, cookie, set }) => {
-        const token = cookie.auth.value
-        if (!token) {
-            set.status = 401
-            return { error: "Unauthorized" }
-        }
-                try {
-            const payload = await jwt.verify(token)
-            if (!payload || typeof payload !== "object" || !("id" in payload)) {
-                set.status = 401
-                return { error: "Invalid token" }
-            }
+      const user = users.get(payload.id as string)
+      if (!user) {
+        set.status = 404
+        return { error: "User not found" }
+      }
+      set.status = 200;
+      const event_list = SqlGetEvent(payload.id as string)
+      // const event_list = SqlGetEvent("105455031157338342793")
+      return event_list
+    } catch (error) {
+      set.status = 401
+      return { error: "Unauthorized" }
+    }
+  })
+  .post("/api/delEvent", async ({ body, jwt, cookie, set }) => {
+    const token = cookie.auth.value
+    if (!token) {
+      set.status = 401
+      return { error: "Unauthorized" }
+    }
+    try {
+      const payload = await jwt.verify(token)
+      if (!payload || typeof payload !== "object" || !("id" in payload)) {
+        set.status = 401
+        return { error: "Invalid token" }
+      }
 
-            const user = users.get(payload.id as string)
-            if (!user) {
-                set.status = 404
-                return { error: "User not found" }
-            }
-            set.status = 200;
-            //sql
-            const sql_op = await SqlDelEvent(payload.id as string, body.title, body.date)
-            return (sql_op)
-        } catch (error) {
-            set.status = 401
-            console.log(error)
-            return { error: "Unauthorized" }
-        }
-    }, {
-        body: t.Object({
-            title: t.String(),
-            date: t.String()
-        })
+      const user = users.get(payload.id as string)
+      if (!user) {
+        set.status = 404
+        return { error: "User not found" }
+      }
+      set.status = 200;
+      //sql
+      const sql_op = await SqlDelEvent(payload.id as string, body.title, body.date)
+      return (sql_op)
+    } catch (error) {
+      set.status = 401
+      console.log(error)
+      return { error: "Unauthorized" }
+    }
+  }, {
+    body: t.Object({
+      title: t.String(),
+      date: t.String()
     })
-  
+  })
+
   .post("/api/auth/login", async ({ body, set, jwt, cookie }) => {
     const { email, password } = body as { email?: string; password?: string };
     if (!email || !password) {
-        set.status = 400;
-        return { success: false, error: "Missing fields" };
+      set.status = 400;
+      return { success: false, error: "Missing fields" };
     }
 
     const user = Array.from(users.values()).find((u) => u.email === email);
     if (!user || !(user as any).password) {
-        set.status = 401;
-        return { success: false, error: "Invalid email or password" };
+      set.status = 401;
+      return { success: false, error: "Invalid email or password" };
     }
 
     const match = await compare(password, (user as any).password);
     if (!match) {
-        set.status = 401;
-        return { success: false, error: "Invalid email or password" };
+      set.status = 401;
+      return { success: false, error: "Invalid email or password" };
     }
 
     const token = await jwt.sign({
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        expires: JSON.stringify(new Date(Date.now() + (SESSION_SPAN_MS))),
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      expires: JSON.stringify(new Date(Date.now() + (SESSION_SPAN_MS))),
     });
 
     cookie.auth.set({
-        value: token,
-        httpOnly: true,
-        secure: NODE_ENV === "production",
-        sameSite: NODE_ENV === "production" ? "none" : "lax",
-        path: "/",
-        maxAge: SESSION_SPAN_MS / 1000,
+      value: token,
+      httpOnly: true,
+      secure: NODE_ENV === "production",
+      sameSite: NODE_ENV === "production" ? "none" : "lax",
+      path: "/",
+      maxAge: SESSION_SPAN_MS / 1000,
     });
 
     return {
-        success: true,
-        user: {
-            id: user.id,
-            email: user.email,
-            name: user.name,
-            picture: user.picture,
-        },
+      success: true,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        picture: user.picture,
+      },
     };
+  })
+  .post('/api/createshare',async({jwt, cookie, set})=>{
+        const token = cookie.auth.value
+    if (!token) {
+      set.status = 401
+      return { error: "Unauthorized" }
+    }
+      try {
+      const payload = await jwt.verify(token)
+      if (!payload || typeof payload !== "object" || !("id" in payload)) {
+        set.status = 401
+        return { error: "Invalid token" }
+      }
+
+      const user = users.get(payload.id as string)
+      if (!user) {
+        set.status = 404
+        return { error: "User not found" }
+      }
+      set.status = 200;
+      //sql create link
+      const data = createLink(payload.id as string)
+      return data
+      
+    } catch (error) {
+      set.status = 401
+      console.log(error)
+      return { error: "Unauthorized" }
+    }
+  })
+  .post('/api/checkvisit', async ({ body, jwt, cookie, set }) => {
+    const token = cookie.auth.value
+    if (!token) {
+      set.status = 401
+      return { error: "Unauthorized" }
+    }
+    try {
+      const payload = await jwt.verify(token)
+      if (!payload || typeof payload !== "object" || !("id" in payload)) {
+        set.status = 401
+        return { error: "Invalid token" }
+      }
+
+      const user = users.get(payload.id as string)
+      if (!user) {
+        set.status = 404
+        return { error: "User not found" }
+      }
+      set.status = 200;
+
+      const data = await checkVisited(body.sharelink,payload.id as string)
+      return data
+    } catch (error) {
+      set.status = 401
+      console.log(error)
+      return { error: "Unauthorized" }
+    }
+
+  })
+  .post('/api/getgroupevent',async({body, jwt, cookie, set})=>{
+        const token = cookie.auth.value
+    if (!token) {
+      set.status = 401
+      return { error: "Unauthorized" }
+    }
+    try {
+      const payload = await jwt.verify(token)
+      if (!payload || typeof payload !== "object" || !("id" in payload)) {
+        set.status = 401
+        return { error: "Invalid token" }
+      }
+
+      const user = users.get(payload.id as string)
+      if (!user) {
+        set.status = 404
+        return { error: "User not found" }
+      }
+      set.status = 200;
+
+      const data = await getGroupEvent(body.sharelink)
+      return data
+    } catch (error) {
+      set.status = 401
+      console.log(error)
+      return { error: "Unauthorized" }
+    }
   })
   .listen(3000);
 

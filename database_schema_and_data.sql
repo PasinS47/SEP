@@ -21,7 +21,7 @@ SET @@SESSION.SQL_LOG_BIN= 0;
 -- GTID state at the beginning of the backup 
 --
 
-SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ '4f060b22-c44e-11f0-b77a-79296272130b:1-25';
+SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ '4f060b22-c44e-11f0-b77a-79296272130b:1-95';
 
 --
 -- Table structure for table `events`
@@ -37,7 +37,7 @@ CREATE TABLE `events` (
   `date` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
   `end` text COLLATE utf8mb4_general_ci NOT NULL,
   PRIMARY KEY (`eventId`)
-) ENGINE=InnoDB AUTO_INCREMENT=1473 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1475 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -46,8 +46,60 @@ CREATE TABLE `events` (
 
 LOCK TABLES `events` WRITE;
 /*!40000 ALTER TABLE `events` DISABLE KEYS */;
-INSERT INTO `events` VALUES (1472,'105455031157338342793','Test1234','2025-11-21','select end');
+INSERT INTO `events` VALUES (1472,'105455031157338342793','Test1234','2025-11-21','select end'),(1473,'105455031157338342793','serserse','2025-11-20','select end');
 /*!40000 ALTER TABLE `events` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `inviteLinks`
+--
+
+DROP TABLE IF EXISTS `inviteLinks`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `inviteLinks` (
+  `Id` int NOT NULL AUTO_INCREMENT,
+  `ownId` varchar(1000) DEFAULT NULL,
+  `shareLink` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`Id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `inviteLinks`
+--
+
+LOCK TABLES `inviteLinks` WRITE;
+/*!40000 ALTER TABLE `inviteLinks` DISABLE KEYS */;
+INSERT INTO `inviteLinks` VALUES (2,'105455031157338342793','QALu2ClW3c4ZQ4aK');
+/*!40000 ALTER TABLE `inviteLinks` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `linkOther`
+--
+
+DROP TABLE IF EXISTS `linkOther`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `linkOther` (
+  `Id` int NOT NULL AUTO_INCREMENT,
+  `shareLink` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `visitId` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  PRIMARY KEY (`Id`),
+  UNIQUE KEY `shareLink` (`shareLink`,`visitId`),
+  UNIQUE KEY `shareLink_2` (`shareLink`,`visitId`)
+) ENGINE=InnoDB AUTO_INCREMENT=58 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `linkOther`
+--
+
+LOCK TABLES `linkOther` WRITE;
+/*!40000 ALTER TABLE `linkOther` DISABLE KEYS */;
+INSERT INTO `linkOther` VALUES (57,'QALu2ClW3c4ZQ4aK','105455031157338342793');
+/*!40000 ALTER TABLE `linkOther` ENABLE KEYS */;
 UNLOCK TABLES;
 SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -60,4 +112,4 @@ SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-11-21 21:54:34
+-- Dump completed on 2025-11-23  1:42:06

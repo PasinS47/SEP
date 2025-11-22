@@ -3,26 +3,26 @@ import { toast } from "sonner";
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 async function fetchWithInterceptor(
-  url: string,
-  options?: RequestInit
+    url: string,
+    options?: RequestInit
 ): Promise<Response> {
-  const response = await fetch(url, options);
+    const response = await fetch(url, options);
 
-  // Check for custom warning headers
-  const tokenWarning = response.headers.get("X-Token-Warning");
-  const tokenRemaining = response.headers.get("X-Token-Remaining");
+    // Check for custom warning headers
+    const tokenWarning = response.headers.get("X-Token-Warning");
+    const tokenRemaining = response.headers.get("X-Token-Remaining");
 
-  if (tokenWarning) {
-    const remainingSeconds = tokenRemaining ? parseInt(tokenRemaining) : 0;
-    toast.warning(`⚠️ ${tokenWarning}`, {
-      description: remainingSeconds
-        ? `Session expires in ${remainingSeconds} seconds`
-        : undefined,
-      duration: 4000,
-    });
-  }
+    if (tokenWarning) {
+        const remainingSeconds = tokenRemaining ? parseInt(tokenRemaining) : 0;
+        toast.warning(`⚠️ ${tokenWarning}`, {
+            description: remainingSeconds
+                ? `Session expires in ${remainingSeconds} seconds`
+                : undefined,
+            duration: 4000,
+        });
+    }
 
-  return response;
+    return response;
 }
 
 
@@ -72,10 +72,10 @@ export async function CalenGetEvent() {
     })
     return response.json()
 }
-export async function delEvent(title:string,date:string){
-    const data = {title:title,date:date}
-const response = await fetch(`${API_URL}/api/delEvent`, {
-        method:"POST",
+export async function delEvent(title: string, date: string) {
+    const data = { title: title, date: date }
+    const response = await fetch(`${API_URL}/api/delEvent`, {
+        method: "POST",
         credentials: "include",
         headers: {
             "Content-Type": "application/json",
@@ -103,4 +103,31 @@ export async function registerAccount(name: string, email: string, password: str
         body: JSON.stringify({ name, email, password }),
     });
     return response.json();
+}
+export async function checkVisited(lnk: string) {
+    const response = await fetch(`${API_URL}/api/checkvisit`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sharelink: lnk }),
+
+    })
+    return response
+}
+export async function createShareLink() {
+    const response = await fetch(`${API_URL}/api/createshare`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+    })
+    return response
+}
+export async function getGroupEvent(lnk:string) {
+    const response = await fetch(`${API_URL}/api/getgroupevent`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body :JSON.stringify({sharelink: lnk })
+    })
+    return response
 }
