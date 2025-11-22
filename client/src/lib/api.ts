@@ -1,7 +1,33 @@
+import { toast } from "sonner";
+
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
+async function fetchWithInterceptor(
+  url: string,
+  options?: RequestInit
+): Promise<Response> {
+  const response = await fetch(url, options);
+
+  // Check for custom warning headers
+  const tokenWarning = response.headers.get("X-Token-Warning");
+  const tokenRemaining = response.headers.get("X-Token-Remaining");
+
+  if (tokenWarning) {
+    const remainingSeconds = tokenRemaining ? parseInt(tokenRemaining) : 0;
+    toast.warning(`⚠️ ${tokenWarning}`, {
+      description: remainingSeconds
+        ? `Session expires in ${remainingSeconds} seconds`
+        : undefined,
+      duration: 4000,
+    });
+  }
+
+  return response;
+}
+
+
 export async function fetchMe() {
-    const response = await fetch(`${API_URL}/api/auth/me`, {
+    const response = await fetchWithInterceptor(`${API_URL}/api/auth/me`, {
         credentials: "include",
     });
     return response.json();
@@ -16,7 +42,7 @@ export async function logout() {
 }
 
 export async function fetchProfile() {
-    const response = await fetch(`${API_URL}/api/profile`, {
+    const response = await fetchWithInterceptor(`${API_URL}/api/profile`, {
         credentials: "include",
     });
     return response.json();
@@ -57,4 +83,24 @@ const response = await fetch(`${API_URL}/api/delEvent`, {
         body: JSON.stringify(data)
     })
     return response
+}
+
+export async function loginWithEmail(email: string, password: string) {
+    const response = await fetch(`${API_URL}/api/auth/login`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+    });
+    return response.json();
+}
+
+export async function registerAccount(name: string, email: string, password: string) {
+    const response = await fetch(`${API_URL}/api/auth/register`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password }),
+    });
+    return response.json();
 }

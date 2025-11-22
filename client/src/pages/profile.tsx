@@ -2,16 +2,30 @@ import { fetchProfile, logout } from "@/lib/api.ts";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card.tsx";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+} from "@/components/ui/card.tsx";
 import { Separator } from "@radix-ui/react-separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 
-export default function Profile({user, setUser}: { user: any; setUser: (u: any) => void; }) {
+export default function Profile({
+  user,
+  setUser,
+  isLoggedOut,
+  setIsLoggedOut,
+}: {
+  user: any;
+  setUser: (u: any) => void;
+  isLoggedOut: any;
+  setIsLoggedOut: (u: any) => void;
+}) {
   const [profile, setProfile] = useState<any>(null);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [isLoggedOut, setIsLoggedOut] = useState(false);
 
   useEffect(() => {
     if (!user && !isLoggedOut) {
@@ -24,7 +38,7 @@ export default function Profile({user, setUser}: { user: any; setUser: (u: any) 
       if (res?.success) setProfile(res.user);
       else navigate("/login");
     })();
-  }, [user, navigate])
+  }, [user, navigate]);
 
   const handleLogout = async () => {
     setIsLoggedOut(true);
@@ -46,10 +60,14 @@ export default function Profile({user, setUser}: { user: any; setUser: (u: any) 
 
   return (
     <div className="flex justify-center items-center min-h-[85vh] bg-background text-foreground">
-      <Card className="w-[26rem] shadow-md border border-border bg-card">
+      <Card className="w-104 shadow-md border border-border bg-card">
         <CardHeader className="flex flex-col items-center space-y-2">
           <Avatar className="w-20 h-20">
-            <AvatarImage src={user.picture} alt={user.name} referrerPolicy={"no-referrer"} />
+            <AvatarImage
+              src={user.picture}
+              alt={user.name}
+              referrerPolicy={"no-referrer"}
+            />
             <AvatarFallback>{user.name[0]}</AvatarFallback>
           </Avatar>
           <CardTitle className="text-xl font-semibold mt-2">
