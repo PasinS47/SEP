@@ -303,9 +303,9 @@ export default function Share({ user, setUser }: { user: any; setUser: (u: any) 
                     events={event_list}
                     dateClick={async (info) => {
                         createBox(info.jsEvent, info.dateStr)
-                        const getE = await CalenGetEvent();
-                        // console.log(getE)
-                        setEvent_list(getE)
+                        const getE = await getGroupEvent(String(lnk));
+                        const da = await getE.json()
+                        setEvent_list(da);
                         setSt(true)
                     }}
                     eventClick={hadleClickEvent}
