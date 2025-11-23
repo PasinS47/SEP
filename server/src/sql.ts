@@ -11,8 +11,8 @@ const connection = await mysql.createConnection({
 
 //Insert to Mysql DB
 export async function SqlAddEvent(id: string, eventName: string, date: string, end: string) {
-    const sql = "INSERT INTO events (id,eventName,date,end) VALUES (?,?,?,?)"
-    const sql_c = "SELECT id From events WHERE id = ? AND eventName = ? AND date = ?"
+    const sql = "INSERT INTO events (userId,eventName,date,end) VALUES (?,?,?,?)"
+    const sql_c = "SELECT userId From events WHERE userId = ? AND eventName = ? AND date = ?"
     const [rows_k] = await connection.execute(sql_c, [id, eventName, date])
     // console.log(rows_k.length)
     if (rows_k.length >= 1) return { error: "date already exits", success: false }
@@ -21,7 +21,7 @@ export async function SqlAddEvent(id: string, eventName: string, date: string, e
 }
 //Get from Mysql DB
 export async function SqlGetEvent(id: string) {
-    const sql = "SELECT eventName,date,end From events WHERE id = ?;"
+    const sql = "SELECT eventName,date,end From events WHERE userId = ?;"
     try {
         const [row] = await connection.execute(sql, [id])
         let event_json = {};
@@ -47,7 +47,7 @@ export async function SqlGetEvent(id: string) {
 
 }
 export async function SqlDelEvent(id: string, title: string, date: string) {
-    const sql = "DELETE FROM events WHERE id = ? AND eventName = ? AND date = ?"
+    const sql = "DELETE FROM events WHERE userId = ? AND eventName = ? AND date = ?"
     try {
         const [row] = await connection.execute(sql, [id, title, date])
         console.log(row)
@@ -63,8 +63,8 @@ export async function SqlDelEvent(id: string, title: string, date: string) {
 }
 export async function checkVisited(lnk: string, visiterId: string) {
     const sql = "SELECT * FROM inviteLinks WHERE shareLink = ?"
-    const sql1 = "SELECT * FROM linkOther WHERE shareLink = ? AND visitId = ?"
-    const sql2 = "INSERT INTO linkOther(shareLink,visitId) VALUES(?,?)"
+    const sql1 = "SELECT * FROM linkOther WHERE shareLink = ? AND userId = ?"
+    const sql2 = "INSERT INTO linkOther(shareLink,userId) VALUES(?,?)"
     try {
         const [row] = await connection.execute(sql, [lnk])
         if (row.length == 1) {
@@ -87,9 +87,9 @@ export async function checkVisited(lnk: string, visiterId: string) {
     }
 }
 export async function createLink(userId: string) {
-    const sql = "SELECT * FROM inviteLinks WHERE ownId = ?"
-    const sql1 = "INSERT INTO inviteLinks(ownId,shareLink) VALUES(?,?)"
-    const sql2 = "INSERT INTO linkOther(visitId,shareLink) VALUES(?,?)"
+    const sql = "SELECT * FROM inviteLinks WHERE userId = ?"
+    const sql1 = "INSERT INTO inviteLinks(userId,shareLink) VALUES(?,?)"
+    const sql2 = "INSERT INTO linkOther(userId,shareLink) VALUES(?,?)"
     try {
         const [row] = await connection.execute(sql, [userId])
         if (row.length == 1) {
@@ -109,7 +109,7 @@ export async function createLink(userId: string) {
 
 }
 export async function getGroupEvent(lnk: string) {
-    const sql = "SELECT * FROM events as e JOIN (SELECT visitId FROM linkOther WHERE shareLink = ?)as b ON e.id = b.visitId"
+    const sql = "SELECT * FROM events as e JOIN (SELECT userId FROM linkOther WHERE shareLink = ?)as b ON e.userId = b.userId"
     let event_json = {};
     let event_json_e = {};
     let event_array = [];

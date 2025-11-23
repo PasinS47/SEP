@@ -24,12 +24,12 @@ DROP TABLE IF EXISTS `events`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `events` (
   `eventId` int NOT NULL AUTO_INCREMENT,
-  `id` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `userId` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `eventName` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
   `date` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
   `end` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   PRIMARY KEY (`eventId`)
-) ENGINE=InnoDB AUTO_INCREMENT=1475 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1476 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -38,7 +38,7 @@ CREATE TABLE `events` (
 
 LOCK TABLES `events` WRITE;
 /*!40000 ALTER TABLE `events` DISABLE KEYS */;
-INSERT INTO `events` VALUES (1472,'105455031157338342793','Test1234','2025-11-21','select end'),(1473,'105455031157338342793','serserse','2025-11-20','select end');
+INSERT INTO `events` VALUES (1472,'105455031157338342793','Test1234','2025-11-21','select end'),(1473,'105455031157338342793','serserse','2025-11-20','select end'),(1475,'101320576795952476531','Hiura','2025-11-18','select end');
 /*!40000 ALTER TABLE `events` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -51,10 +51,10 @@ DROP TABLE IF EXISTS `inviteLinks`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `inviteLinks` (
   `Id` int NOT NULL AUTO_INCREMENT,
-  `ownId` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `userId` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `shareLink` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`Id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -63,7 +63,7 @@ CREATE TABLE `inviteLinks` (
 
 LOCK TABLES `inviteLinks` WRITE;
 /*!40000 ALTER TABLE `inviteLinks` DISABLE KEYS */;
-INSERT INTO `inviteLinks` VALUES (2,'105455031157338342793','QALu2ClW3c4ZQ4aK');
+INSERT INTO `inviteLinks` VALUES (3,'105455031157338342793','bvMQXr6UmcLLJLZE');
 /*!40000 ALTER TABLE `inviteLinks` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -77,11 +77,11 @@ DROP TABLE IF EXISTS `linkOther`;
 CREATE TABLE `linkOther` (
   `Id` int NOT NULL AUTO_INCREMENT,
   `shareLink` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `visitId` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `userId` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
   PRIMARY KEY (`Id`),
-  UNIQUE KEY `shareLink` (`shareLink`,`visitId`),
-  UNIQUE KEY `shareLink_2` (`shareLink`,`visitId`)
-) ENGINE=InnoDB AUTO_INCREMENT=58 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  UNIQUE KEY `shareLink` (`shareLink`,`userId`),
+  UNIQUE KEY `shareLink_2` (`shareLink`,`userId`)
+) ENGINE=InnoDB AUTO_INCREMENT=60 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -90,7 +90,7 @@ CREATE TABLE `linkOther` (
 
 LOCK TABLES `linkOther` WRITE;
 /*!40000 ALTER TABLE `linkOther` DISABLE KEYS */;
-INSERT INTO `linkOther` VALUES (57,'QALu2ClW3c4ZQ4aK','105455031157338342793');
+INSERT INTO `linkOther` VALUES (59,'bvMQXr6UmcLLJLZE','101320576795952476531'),(58,'bvMQXr6UmcLLJLZE','105455031157338342793');
 /*!40000 ALTER TABLE `linkOther` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -103,4 +103,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-11-23 10:18:06
+-- Dump completed on 2025-11-23 10:47:07
