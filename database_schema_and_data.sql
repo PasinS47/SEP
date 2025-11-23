@@ -14,14 +14,6 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
-SET @MYSQLDUMP_TEMP_LOG_BIN = @@SESSION.SQL_LOG_BIN;
-SET @@SESSION.SQL_LOG_BIN= 0;
-
---
--- GTID state at the beginning of the backup 
---
-
-SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ '4f060b22-c44e-11f0-b77a-79296272130b:1-95';
 
 --
 -- Table structure for table `events`
@@ -32,10 +24,10 @@ DROP TABLE IF EXISTS `events`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `events` (
   `eventId` int NOT NULL AUTO_INCREMENT,
-  `id` varchar(1000) COLLATE utf8mb4_general_ci NOT NULL,
+  `id` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `eventName` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
   `date` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
-  `end` text COLLATE utf8mb4_general_ci NOT NULL,
+  `end` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   PRIMARY KEY (`eventId`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1475 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -59,7 +51,7 @@ DROP TABLE IF EXISTS `inviteLinks`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `inviteLinks` (
   `Id` int NOT NULL AUTO_INCREMENT,
-  `ownId` varchar(1000) DEFAULT NULL,
+  `ownId` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `shareLink` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`Id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -101,7 +93,6 @@ LOCK TABLES `linkOther` WRITE;
 INSERT INTO `linkOther` VALUES (57,'QALu2ClW3c4ZQ4aK','105455031157338342793');
 /*!40000 ALTER TABLE `linkOther` ENABLE KEYS */;
 UNLOCK TABLES;
-SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -112,4 +103,4 @@ SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-11-23  1:42:06
+-- Dump completed on 2025-11-23 10:18:06
