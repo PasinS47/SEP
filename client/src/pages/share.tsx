@@ -1,26 +1,47 @@
 import '../calender.css'
-import { fetchProfile, CalenAddEvent, CalenGetEvent, delEvent,createShareLink } from "@/lib/api.ts";
+import { fetchProfile, CalenAddEvent, CalenGetEvent, delEvent, checkVisited, getGroupEvent } from "@/lib/api.ts";
 import { toast } from "sonner";
 import FullCalendar from '@fullcalendar/react'
 import interactionPlugin from '@fullcalendar/interaction';
 import dayGridPlugin from '@fullcalendar/daygrid' // a plugin!
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState, useRef, use } from 'react'
 
-export default function Calendar({ user, setUser }: { user: any; setUser: (u: any) => void; }) {
+export default function Share({ user, setUser }: { user: any; setUser: (u: any) => void; }) {
+    const { lnk } = useParams()
+    const navigate = useNavigate()
     const [profile, setProfile] = useState<any>(null);
     const [isLoggedOut, setIsLoggedOut] = useState(false);
-    const [isSecondDate, setIsSecondDate] = useState(false);
-    // const [loading, setLoading] = useState(false);
-
-    const navigate = useNavigate();
-
-    const [isBoxshow, setisBoxshow] = useState(true);
+    const [isValid, setIsValid] = useState(false)
     const [event_list, setEvent_list] = useState([]);
     const [st, setSt] = useState(true);
     const [Dst, setDSt] = useState(true);
-
-
+    const [isBoxshow, setisBoxshow] = useState(true);
+    const [isSecondDate, setIsSecondDate] = useState(false);
+    useEffect(() => {
+        (async () => {
+            if (isValid) return
+            const res = await checkVisited(String(lnk))
+            if (!res.ok) {
+                toast.error('connection faild')
+                navigate('/profile')
+                return
+            }
+            const data = await res.json()
+            if (!data.success) {
+                toast.error('invalid link')
+                navigate('/profile')
+                return
+            }
+            setIsValid(true)
+            console.log('link success')
+            const resE = await getGroupEvent(String(lnk))
+            if (!resE) return
+            const dataE = await resE.json()
+            setEvent_list(dataE)
+            // console.log(dataE)
+        })();
+    }, [lnk])
 
     useEffect(() => {
         if (!user && !isLoggedOut) {
@@ -36,37 +57,19 @@ export default function Calendar({ user, setUser }: { user: any; setUser: (u: an
             }
             else navigate("/login");
         })();
-
+        console.log("hello")
     }, [user, navigate]);
     useEffect(() => {
         (async () => {
             if (st) {
-                const getE = await CalenGetEvent();
-                setEvent_list(getE);
+                const getE = await getGroupEvent(String(lnk));
+                const da = await getE.json()
+                setEvent_list(da);
                 setSt(false)
                 console.log(getE)
             }
         })();
     }, [st])
-    // useEffect(() => {
-    //     event_list.forEach(element => {
-    //         const s = document.getElementById(element.start)
-    //         if(!s) return
-    //         s!.onclick = () =>{
-    //             console.log(s!.start)
-    //         }
-    //     });
-    // }, [event_list])
-    // const event_list = [
-    //     //single
-    //     { title: 'event 1', date: '2025-10-15' },
-    //     { title: 'event 2', date: '2025-10-16' },
-    //     //continuous
-    //     { title: 'Conference', start: '2025-10-05', end: '2025-10-10' },
-    //     //recursive
-    //     //{ title: 'Recursive',startTime: '09:00',endTime: '17:00',daysOfWeek: [1],startRecur: '2025-10-01',endRecur: '2025-12-31'}
-    // ]
-
     function createBox(event: MouseEvent, date: String) {
 
 
@@ -197,10 +200,8 @@ export default function Calendar({ user, setUser }: { user: any; setUser: (u: an
             setisBoxshow(true)
             setSt(true)
         }
-
     }
     return (
-
         <>
             <div id="calendar_container">
                 <FullCalendar
@@ -215,9 +216,9 @@ export default function Calendar({ user, setUser }: { user: any; setUser: (u: an
                     events={event_list}
                     dateClick={async (info) => {
                         createBox(info.jsEvent, info.dateStr)
-                        const getE = await CalenGetEvent();
-                        // console.log(getE)
-                        setEvent_list(getE)
+                        const getE = await getGroupEvent(String(lnk));
+                        const da = await getE.json()
+                        setEvent_list(da);
                         setSt(true)
 
                     }}
@@ -254,15 +255,6 @@ export default function Calendar({ user, setUser }: { user: any; setUser: (u: an
                     <button id="delC">cancel</button>
                 </div>
             </div>
-                            <div id="link-con">
-                    <button id="invbutt" onClick={async()=>{
-                        const res = await createShareLink()
-                        if(!res.ok) return
-                        const data = await res.json()
-                        document.getElementById('lnk')!.innerText = `/share/${data.link}`
-                    }}> create Invite</button>
-                    <p id="lnk"></p>
-                </div>
         </>
     )
 }

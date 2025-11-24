@@ -148,3 +148,17 @@
     border: greenyellow 2px solid;
     color: greenyellow;
 }
+#invbutt{
+    background-color: #556cff;
+    border-radius: 20px;
+    padding: 10px 20px 10px 20px;
+    margin-right: 20px;
+    margin-left: 20px;
+}
+#link-con{
+    display: flex;
+    align-content: center;
+    align-items: center;
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
