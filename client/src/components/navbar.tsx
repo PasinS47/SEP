@@ -27,7 +27,7 @@ export function Navbar({
   };
 
   return (
-    <nav className="flex justify-between items-center px-4 py-3 border-b bg-background sticky top-0 z-50">
+    <nav className="flex justify-between items-center px-6 py-4 border-b bg-background sticky top-0 z-50">
       <Link to="/" className="font-semibold text-lg text-foreground">
         🎓 Student Event Planner
       </Link>
