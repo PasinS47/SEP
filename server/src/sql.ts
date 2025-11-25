@@ -4,7 +4,7 @@ import { nanoid } from 'nanoid'
 const connection = await mysql.createConnection({
     host: "localhost",
     user: "root",
-    password: "qwerty",
+    password: "heehee123",
     database: "student_planner",
     port: 3306,
 });
