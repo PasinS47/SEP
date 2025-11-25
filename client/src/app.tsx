@@ -19,7 +19,7 @@ export default function App() {
   if (loading) return <p>Loading...</p>;
 
   return (
-    <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
+    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <BrowserRouter>
         <NavigationListener user={user} reload={reload} />
         <Navbar user={user} setUser={setUser} setIsLoggedOut={setIsLoggedOut} />

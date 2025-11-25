@@ -19,7 +19,7 @@ export default function Calendar({ user, setUser }: { user: any; setUser: (u: an
     const [event_list, setEvent_list] = useState([]);
     const [st, setSt] = useState(true);
     const [Dst, setDSt] = useState(true);
-
+    const MAXIMUM_EVENT_CARD = 8;
 
 
     useEffect(() => {
@@ -43,8 +43,9 @@ export default function Calendar({ user, setUser }: { user: any; setUser: (u: an
             if (st) {
                 const getE = await CalenGetEvent();
                 setEvent_list(getE);
-                setSt(false)
-                console.log(getE)
+                setSt(false);
+                console.log(getE);
+                updateEvent(getE);
             }
         })();
     }, [st])
@@ -129,11 +130,17 @@ export default function Calendar({ user, setUser }: { user: any; setUser: (u: an
         add_butt!.onclick = async () => {
             const eventName = eventN!.value;
             const eventStart = startDateE!.textContent;
-            const eventEnd = endDateE!.textContent
+            const eventEnd = endDateE!.textContent;
+            if(eventStart >= eventEnd && isSecondDate){
+                toast.error("end date must be after start date")
+                return
+            }
             if (eventName == "") {
                 toast.message("fill event name")
                 return
             }
+            // console.log(eventName, eventStart, eventEnd)
+
             const addRes = await CalenAddEvent(eventName, eventStart, eventEnd);
             if (!addRes.ok) {
                 //toast.error("connect fail!!")
@@ -197,17 +204,98 @@ export default function Calendar({ user, setUser }: { user: any; setUser: (u: an
             setisBoxshow(true)
             setSt(true)
         }
+    }
 
+    function updateEvent(events : Array<Object>){
+        const event_container = document.querySelector('#event_list_container')
+        let total = 0;
+        if(!event_container)
+            return;
+        event_container.innerHTML = "";
+
+        const current_time = new Date();
+        const upcoming = document.createElement('h1');
+        upcoming.innerHTML = `Upcoming:`;
+        event_container.appendChild(upcoming);
+
+        const ended_events = [];
+        const upcoming_events = [];
+
+        for(const event of events){
+            const string_event = JSON.stringify(event);
+            const event_detail = JSON.parse(string_event);
+            if('end' in event_detail)
+                event_detail.date = event_detail.start;
+            else
+                event_detail.end = event_detail.date;
+            if(current_time <= new Date(event_detail.end))
+                upcoming_events.push(event_detail);
+            else    
+                ended_events.push(event_detail);
+        }
+
+        upcoming_events.sort((a, b) => new Date(a.date) - new Date(b.date) === 0 
+                                    ? new Date(a.end) - new Date(b.end) 
+                                    : new Date(a.date) - new Date(b.date))
+
+        for(const event of upcoming_events){
+            const current_card = createEvent(event);
+            current_card.classList.add('upcoming')
+            event_container.appendChild(current_card);
+            if(++total >= MAXIMUM_EVENT_CARD){
+                return;
+            }
+        }
+        
+        if(!ended_events || total+1 >= MAXIMUM_EVENT_CARD)
+            return;
+        
+        total++;
+        const ended = document.createElement('h1');
+        ended.innerHTML = `Ended :`;
+        event_container.appendChild(ended);
+
+        for(const event of ended_events){
+            if(++total > MAXIMUM_EVENT_CARD){
+                return;
+            }
+            const current_card = createEvent(event)
+            current_card.classList.add('ended')
+            event_container.appendChild(current_card);
+        }
+            
+    }
+
+    function createEvent(event : Object){
+        const current_card = document.createElement('p');
+        current_card.classList.add('event_card');
+        const header = document.createElement('h2');
+        header.innerHTML = event.title;
+        current_card.appendChild(header);
+        const detail = document.createElement('div');
+        detail.classList.add('event_detail')
+        if('start' in event){
+            detail.innerHTML += `From: ${event.start} to ${event.end}`
+        }
+        else{
+            detail.innerHTML = `${event.date}`
+        }
+        current_card.appendChild(detail)
+        return current_card;
     }
     return (
 
         <>
             <div id="calendar_container">
+                <div className="event_header">
+                    Events
+                </div>
+                <div id="event_list_container"></div>
                 <FullCalendar
                     plugins={[interactionPlugin, dayGridPlugin]}
                     initialView="dayGridMonth"
                     weekends={true}
-                    height={"auto"}
+                    height={"80vh"}
                     eventColor={"#ff2e1bff"}
                     selectable={true}
                     eventOverlap={false}
@@ -219,7 +307,6 @@ export default function Calendar({ user, setUser }: { user: any; setUser: (u: an
                         // console.log(getE)
                         setEvent_list(getE)
                         setSt(true)
-
                     }}
                     eventClick={hadleClickEvent}
                 />
@@ -253,16 +340,18 @@ export default function Calendar({ user, setUser }: { user: any; setUser: (u: an
                     <button id="delE">Delete</button>
                     <button id="delC">cancel</button>
                 </div>
-            </div>
-                            <div id="link-con">
+                <div id="link-con">
+                    <p id="lnk"></p>
                     <button id="invbutt" onClick={async()=>{
                         const res = await createShareLink()
                         if(!res.ok) return
                         const data = await res.json()
-                        document.getElementById('lnk')!.innerText = `/share/${data.link}`
+                        const BASE_URL = window.location.origin
+                        document.getElementById('lnk')!.innerText = `${BASE_URL}/share/${data.link}`
                     }}> create Invite</button>
-                    <p id="lnk"></p>
                 </div>
+            </div>
+                            
         </>
     )
 }

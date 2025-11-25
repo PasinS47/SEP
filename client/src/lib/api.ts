@@ -54,7 +54,7 @@ export function loginWithGoogle() {
 //add event call backend api
 export async function CalenAddEvent(eventName: string, date: string, end: string) {
     const data = { eventName: eventName, date: date, end: end }
-    // console.log(JSON.stringify(data))
+    console.log(JSON.stringify(data))
     const response = await fetch(`${API_URL}/api/addEvent`, {
         method: "POST",
         credentials: "include",

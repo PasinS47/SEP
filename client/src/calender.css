@@ -7,8 +7,76 @@
 
 #calendar_container {
     /* background-color: rgba(250, 192, 0, 0.48); */
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-template-rows: 1fr 8fr;
+    padding: 0 1vw 0 1vw;
+    width: 100%;
+    height: 93vh;
+}
+
+.fc-col-header-cell {
+    background-color: white;
+}
+
+.fc {
+    grid-column: 3/13;
+    width: 100%;
+    grid-row: 2;
+    height: auto;
+    justify-self: center;
+}
+
+.event_header {
+    grid-column: 1/2;
+    grid-row: 1/2;
+    /* writing-mode: vertical-rl; */
+    /* text-orientation: mixed; */
+    font-size: 28px;
+    font-weight: bold;
+    align-self: center;
+    justify-self: start;
+}
+
+#event_list_container{
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    word-break: break-word;
+    /* background-color: #556cff; */
+    grid-column: 1/3;
+    padding: 10px 10px 10px 0px;
+    grid-row: 2;
+    height: auto;
+    width: min(100%, 16.5vw);
+}
+
+#event_list_container > p {
+    /* box-shadow: 2px 2px 1px #ffffff; */
+    /* background-color: #ff2e1bff; */
+    border-radius: 10px;
+    margin-bottom: 20px;
+    padding: 5px 10px;
+    border-right: 6px solid white;
+}
+
+#event_list_container > .upcoming{
+    background-color: #ff2e1bff;
+}
+
+
+#event_list_container > .ended{
+    background-color: rgb(255, 46, 27, 0.5);
+    color: rgb(255, 255, 255, 0.5);
+}
+
+#event_list_container > .upcoming:hover{
+    background-color: rgb(255, 46, 27, 0.8);
+    /* box-shadow: 2px 2px 1px #c3aaaa; */
+}
+
+#event_list_container > .ended:hover{
+    background-color: rgb(255, 46, 27, 0.4);
+    /* box-shadow: 2px 2*/
 }
 
 #event_box {
@@ -26,6 +94,20 @@
     justify-content: space-evenly;
     padding-left: 1%;
     padding-right: 1%;
+}
+
+tbody[role="presentation"] > tr > td:hover {
+    background-color: rgb(255, 46, 27, 0.4);;
+}
+
+#event_list_container > h1{
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+h2 {
+    font-size: 18px;
+    font-weight: bold;
 }
 
 #butt-container {
@@ -151,14 +233,18 @@
 #invbutt{
     background-color: #556cff;
     border-radius: 20px;
-    padding: 10px 20px 10px 20px;
+    height: 50px;
+    width: 150px;
+    padding: 10px 0px;
     margin-right: 20px;
     margin-left: 20px;
 }
 #link-con{
     display: flex;
+    grid-column: 10/13;
+    grid-row: 1;
     align-content: center;
     align-items: center;
-    padding-top: 20px;
-    padding-bottom: 20px;
+    justify-self: end;
+    align-self: center;
 }

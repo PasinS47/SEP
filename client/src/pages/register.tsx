@@ -46,107 +46,132 @@ export default function Register() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-background text-foreground">
-      <Card className="w-88 shadow-md border border-border bg-card">
-        <CardHeader>
-          <CardTitle className="text-center text-xl font-semibold">
-            🎓 Create Account
-          </CardTitle>
-        </CardHeader>
+<div
+  className="
+    min-h-screen w-full flex items-center justify-center pt-15 relative 
+    bg-gradient-to-b from-slate-900 via-slate-900 to-slate-800
+  "
+>
+  {/* Title เหมือนหน้า Login */}
+  <h1
+  className="
+    absolute top-[10vh] text-4xl md:text-5xl font-bold 
+    bg-gradient-to-r from-emerald-300 to-cyan-300 
+    bg-clip-text text-transparent 
+    drop-shadow-lg
+  ">
+    Student Event Planner
+  </h1>
 
-        <CardContent className="space-y-4">
-          <form onSubmit={handleRegister} className="space-y-3">
-            <div className="flex flex-col space-y-1">
-              <label htmlFor="name" className="text-sm text-muted-foreground">
-                Name
-              </label>
-              <Input
-                id="name"
-                type="text"
-                placeholder="Your name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-              />
-            </div>
+  {/* Register Card */}
+  <Card className="relative w-96 shadow-lg border border-border bg-white/90 backdrop-blur-md rounded-2xl">
+    <CardHeader>
+      <CardTitle className="text-center text-xl font-semibold text-black">
+        Create Account
+      </CardTitle>
+    </CardHeader>
 
-            <div className="flex flex-col space-y-1">
-              <label htmlFor="email" className="text-sm text-muted-foreground">
-                Email
-              </label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
+    <CardContent className="space-y-4">
+      <form onSubmit={handleRegister} className="space-y-3">
+        
+        {/* Name */}
+        <div className="flex flex-col space-y-1">
+          <label htmlFor="name" className="text-sm text-black">
+            Name
+          </label>
+          <Input
+            id="name"
+            type="text"
+            placeholder="Your name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+            className="text-black"
+          />
+        </div>
 
-            <div className="flex flex-col space-y-1">
-              <label
-                htmlFor="password"
-                className="text-sm text-muted-foreground"
-              >
-                Password
-              </label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
+        {/* Email */}
+        <div className="flex flex-col space-y-1">
+          <label htmlFor="email" className="text-sm text-black">
+            Email
+          </label>
+          <Input
+            id="email"
+            type="email"
+            placeholder="you@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            className="text-black"
+          />
+        </div>
 
-            <div className="flex flex-col space-y-1">
-              <label
-                htmlFor="confirm"
-                className="text-sm text-muted-foreground"
-              >
-                Confirm Password
-              </label>
-              <Input
-                id="confirm"
-                type="password"
-                placeholder="••••••••"
-                value={confirm}
-                onChange={(e) => setConfirm(e.target.value)}
-                required
-              />
-            </div>
+        {/* Password */}
+        <div className="flex flex-col space-y-1">
+          <label htmlFor="password" className="text-sm text-black">
+            Password
+          </label>
+          <Input
+            id="password"
+            type="password"
+            placeholder="••••••••"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            className="text-black"
+          />
+        </div>
 
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Creating account..." : "Register"}
-            </Button>
-          </form>
+        {/* Confirm Password */}
+        <div className="flex flex-col space-y-1">
+          <label htmlFor="confirm" className="text-sm text-black">
+            Confirm Password
+          </label>
+          <Input
+            id="confirm"
+            type="password"
+            placeholder="••••••••"
+            value={confirm}
+            onChange={(e) => setConfirm(e.target.value)}
+            required
+            className="text-black"
+          />
+        </div>
 
-          <Separator className="my-4" />
+        {/* Register Button */}
+        <Button type="submit" className="w-full text-black" disabled={loading}>
+          {loading ? "Creating account..." : "Register"}
+        </Button>
+      </form>
 
-          <Button
-            variant="outline"
-            className="w-full flex items-center justify-center gap-2 hover:bg-accent"
-            onClick={loginWithGoogle}
-          >
-            <FcGoogle className="w-5 h-5" />
-            Sign up with Google
-          </Button>
-        </CardContent>
+      <Separator className="my-4" />
 
-        <CardFooter className="flex justify-center">
-          <p className="text-xs text-muted-foreground">
-            Already have an account?{" "}
-            <a
-              href="/login"
-              className="underline text-primary hover:text-primary/80"
-            >
-              Login here
-            </a>
-          </p>
-        </CardFooter>
-      </Card>
-    </div>
+      {/* Google Register */}
+      <Button
+        variant="outline"
+        className="w-full flex items-center justify-center gap-2 hover:bg-accent text-black"
+        onClick={loginWithGoogle}
+      >
+        <FcGoogle className="w-5 h-5" />
+        Sign up with Google
+      </Button>
+
+     
+    </CardContent>
+
+    <CardFooter className="flex justify-center">
+      <p className="text-xs text-black/70">
+        Already have an account?{" "}
+        <a
+          href="/login"
+          className="underline text-black hover:text-black/70"
+        >
+          Login here
+        </a>
+      </p>
+    </CardFooter>
+  </Card>
+</div>
+
   );
 }
