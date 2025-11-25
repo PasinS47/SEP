@@ -9,7 +9,7 @@ export default function Callback({ reload }: { reload: () => Promise<void> }) {
       await reload();
       navigate("/profile");
     })();
-  }, [navigate, reload]);
+  }, []);
 
   return (
     <div className="p-8 text-center">
