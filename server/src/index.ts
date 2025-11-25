@@ -252,44 +252,47 @@ const app = new Elysia()
     };
   })
   .get("/api/profile", async ({ jwt, cookie, set }) => {
-    const token = cookie.auth.value;
-    if (!token) {
-      set.status = 401;
-      return { error: "Unauthorized" };
-    }
-    try {
-      const payload = await jwt.verify(token);
-      if (!payload || typeof payload !== "object" || !("id" in payload)) {
+      const token = cookie.auth.value;
+      if (!token) {
         set.status = 401;
-        return { error: "Invalid token" };
+        return { error: "Unauthorized" };
       }
+      try {
+        const payload = await jwt.verify(token);
+        if (!payload || typeof payload !== "object" || !("id" in payload)) {
+          set.status = 401;
+          return { error: "Invalid token" };
+        }
 
-      const user = users.get(payload.id as string);
-      if (!user) {
-        set.status = 404;
-        return { error: "User not found" };
+        const user = users.get(payload.id as string);
+        if (!user) {
+          set.status = 404;
+          return { error: "User not found" };
+        }
+
+        // [NEW] Get the event count from the database
+        const eventCount = await SqlGetEventCount(user.id);
+
+        set.status = 200;
+        return {
+          success: true,
+          user: {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            picture: user.picture,
+            memberSince: user.createdAt.toISOString(),
+          },
+          stats: {
+            eventsCreated: eventCount, // [UPDATED] Use real count
+            eventsJoined: 0,
+            totalAttendees: 0,
+          },
+        };
+      } catch (error) {
+        set.status = 401;
+        return { error: "Unauthorized" };
       }
-
-      set.status = 200;
-      return {
-        success: true,
-        user: {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          picture: user.picture,
-          memberSince: user.createdAt.toISOString(),
-        },
-        stats: {
-          eventsCreated: 0,
-          eventsJoined: 0,
-          totalAttendees: 0,
-        },
-      };
-    } catch (error) {
-      set.status = 401;
-      return { error: "Unauthorized" };
-    }
   })
   .post("/api/auth/register", async ({ body, set }) => {
     const { email, password, name } = body as {
