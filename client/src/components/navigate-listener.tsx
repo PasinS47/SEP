@@ -12,7 +12,7 @@ export function NavigationListener({
 
   useEffect(() => {
     if (user) {
-      reload();
+      reload(true);
     }
   }, [location.pathname]);
 

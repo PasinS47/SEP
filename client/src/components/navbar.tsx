@@ -1,4 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { logout } from "@/lib/api.ts";
 import { toast } from "sonner";
@@ -17,8 +18,8 @@ export function Navbar({
   const [loading, setLoading] = useState(false);
 
   const handleLogout = async () => {
-    setIsLoggedOut(true);
     setLoading(true);
+    setIsLoggedOut(true);
     await logout();
     setUser(null);
     setLoading(false);
@@ -27,14 +28,22 @@ export function Navbar({
   };
 
   return (
-    <nav className="flex justify-between items-center px-4 py-3 border-b bg-background sticky top-0 z-50">
+    <nav className="flex justify-between items-center px-6 py-4 border-b bg-background sticky top-0 z-50">
       <Link to="/" className="font-semibold text-lg text-foreground">
         🎓 Student Event Planner
       </Link>
       <div>
         {user ? (
           <div className="flex items-center gap-x-4">
-            <Link className="text-sm text-foreground" to="/profile">
+             <Link className="flex items-center gap-x-1 text-sm text-foreground" to="/profile">
+              <Avatar className="h-6 w-6">
+                <AvatarImage
+                  src={user.picture}
+                  alt={user.name}
+                  referrerPolicy="no-referrer"
+                />
+                <AvatarFallback>{user.name}</AvatarFallback>
+              </Avatar>&nbsp;
               {user.name}
             </Link>
             <Button variant="outline" size="sm" onClick={handleLogout}>
