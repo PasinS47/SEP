@@ -8,7 +8,7 @@ import {
   CardTitle,
   CardContent,
 } from "@/components/ui/card.tsx";
-import { Separator } from "@/components/ui/separator"; // Changed import to use local component if preferred, or keep @radix-ui
+import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 
@@ -24,7 +24,7 @@ export default function Profile({
   setIsLoggedOut: (u: any) => void;
 }) {
   const [profile, setProfile] = useState<any>(null);
-  const [stats, setStats] = useState<any>(null); // [NEW] State for stats
+  const [stats, setStats] = useState<any>(null);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
@@ -38,7 +38,7 @@ export default function Profile({
       const res = await fetchProfile();
       if (res?.success) {
           setProfile(res.user);
-          setStats(res.stats); // [NEW] Set stats
+          setStats(res.stats);
       }
       else navigate("/login");
     })();
@@ -116,14 +116,13 @@ export default function Profile({
 
           <Separator className="my-6" />
 
-          <div className="flex justify-center">
+          <div className="flex justify-center gap-3">
+             {/* [UPDATED BUTTON] Replaced Logout with Go to Calendar */}
             <Button
-              variant="destructive"
-              onClick={handleLogout}
-              disabled={loading}
               className="w-full"
+              onClick={() => navigate("/calendar")}
             >
-              {loading ? "Logging out..." : "Logout"}
+              Go to Calendar
             </Button>
           </div>
         </CardContent>
