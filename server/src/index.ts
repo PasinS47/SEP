@@ -3,7 +3,7 @@ import { cors } from "@elysiajs/cors"
 import { cookie } from "@elysiajs/cookie"
 import { jwt } from "@elysiajs/jwt"
 import { oauth2 } from "elysia-oauth2"
-import { SqlAddEvent, SqlGetEvent, SqlDelEvent ,checkVisited,createLink,getGroupEvent} from './sql'
+import { SqlAddEvent, SqlGetEvent, SqlDelEvent, checkVisited, createLink, getGroupEvent, SqlGetEventCount } from './sql'
 import { hash, compare } from "bcryptjs";
 
 interface User {
