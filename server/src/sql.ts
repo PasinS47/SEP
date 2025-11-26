@@ -4,7 +4,7 @@ import { nanoid } from 'nanoid'
 const connection = await mysql.createConnection({
     host: "localhost",
     user: "root",
-    password: "",
+    password: "qwerty",
     database: "student_planner",
     port: 3306,
 });
@@ -19,6 +19,22 @@ export async function SqlAddEvent(id: string, eventName: string, date: string, e
     const [rows] = await connection.execute(sql, [id, eventName, date, end])
     if (rows.affectedRows === 1) return { message: "add event successfully", success: true }
 }
+
+// [NEW FUNCTION] Get Event Count
+export async function SqlGetEventCount(id: string) {
+    const sql = "SELECT COUNT(*) as count FROM events WHERE userId = ?"
+    try {
+        const [rows] = await connection.execute(sql, [id])
+        if (Array.isArray(rows) && rows.length > 0) {
+            return (rows[0] as any).count
+        }
+        return 0
+    } catch (error) {
+        console.log(error)
+        return 0
+    }
+}
+
 //Get from Mysql DB
 export async function SqlGetEvent(id: string) {
     const sql = "SELECT eventName,date,end From events WHERE userId = ?;"
