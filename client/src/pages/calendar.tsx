@@ -247,10 +247,13 @@ export default function Calendar({ user, setUser }: { user: any; setUser: (u: an
             }
         }
         
-        if(!ended_events || total+1 >= MAXIMUM_EVENT_CARD)
+        if(!ended_events || ++total >= MAXIMUM_EVENT_CARD)
             return;
-        
-        total++;
+
+        ended_events.sort((a, b) => new Date(b.date) - new Date(a.date) === 0 
+                                    ? new Date(b.end) - new Date(a.end) 
+                                    : new Date(b.date) - new Date(a.date))
+
         const ended = document.createElement('h1');
         ended.innerHTML = `Ended :`;
         event_container.appendChild(ended);
