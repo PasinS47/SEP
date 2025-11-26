@@ -18,6 +18,7 @@ export default function Share({ user, setUser }: { user: any; setUser: (u: any) 
     const [Dst, setDSt] = useState(true);
     const [isBoxshow, setisBoxshow] = useState(true);
     const [isSecondDate, setIsSecondDate] = useState(false);
+    const MAXIMUM_EVENT_CARD = 8;
     useEffect(() => {
         (async () => {
             if (isValid) return
@@ -66,7 +67,8 @@ export default function Share({ user, setUser }: { user: any; setUser: (u: any) 
                 const da = await getE.json()
                 setEvent_list(da);
                 setSt(false)
-                console.log(getE)
+                console.log(getE);
+                updateEvent(da);
             }
         })();
     }, [st])
@@ -156,6 +158,7 @@ export default function Share({ user, setUser }: { user: any; setUser: (u: any) 
         setisBoxshow(false)
 
     }
+
     function hadleClickEvent(e) {
         const title = e.event.title
         const date1 = e.event.start
@@ -201,14 +204,98 @@ export default function Share({ user, setUser }: { user: any; setUser: (u: any) 
             setSt(true)
         }
     }
+    function updateEvent(events : Array<Object>){
+        const event_container = document.querySelector('#event_list_container')
+        let total = 0;
+        if(!event_container)
+            return;
+        event_container.innerHTML = "";
+
+        const current_time = new Date();
+        const upcoming = document.createElement('h1');
+        upcoming.innerHTML = `Upcoming:`;
+        event_container.appendChild(upcoming);
+
+        const ended_events = [];
+        const upcoming_events = [];
+
+        for(const event of events){
+            const string_event = JSON.stringify(event);
+            const event_detail = JSON.parse(string_event);
+            if('end' in event_detail)
+                event_detail.date = event_detail.start;
+            else
+                event_detail.end = event_detail.date;
+            if(current_time <= new Date(event_detail.end))
+                upcoming_events.push(event_detail);
+            else    
+                ended_events.push(event_detail);
+        }
+
+        upcoming_events.sort((a, b) => new Date(a.date) - new Date(b.date) === 0 
+                                    ? new Date(a.end) - new Date(b.end) 
+                                    : new Date(a.date) - new Date(b.date))
+
+        for(const event of upcoming_events){
+            const current_card = createEvent(event);
+            current_card.classList.add('upcoming')
+            event_container.appendChild(current_card);
+            if(++total >= MAXIMUM_EVENT_CARD){
+                return;
+            }
+        }
+        
+        if(!ended_events || ++total >= MAXIMUM_EVENT_CARD)
+            return;
+
+        ended_events.sort((a, b) => new Date(b.date) - new Date(a.date) === 0 
+                                    ? new Date(b.end) - new Date(a.end) 
+                                    : new Date(b.date) - new Date(a.date))
+
+        const ended = document.createElement('h1');
+        ended.innerHTML = `Ended :`;
+        event_container.appendChild(ended);
+
+        for(const event of ended_events){
+            if(++total > MAXIMUM_EVENT_CARD){
+                return;
+            }
+            const current_card = createEvent(event)
+            current_card.classList.add('ended')
+            event_container.appendChild(current_card);
+        }
+            
+    }
+
+    function createEvent(event : Object){
+        const current_card = document.createElement('p');
+        current_card.classList.add('event_card');
+        const header = document.createElement('h2');
+        header.innerHTML = event.title;
+        current_card.appendChild(header);
+        const detail = document.createElement('div');
+        detail.classList.add('event_detail')
+        if('start' in event){
+            detail.innerHTML += `From: ${event.start} to ${event.end}`
+        }
+        else{
+            detail.innerHTML = `${event.date}`
+        }
+        current_card.appendChild(detail)
+        return current_card;
+    }
     return (
         <>
             <div id="calendar_container">
+                <div className="event_header">
+                    Events
+                </div>
+                <div id="event_list_container"></div>
                 <FullCalendar
                     plugins={[interactionPlugin, dayGridPlugin]}
                     initialView="dayGridMonth"
                     weekends={true}
-                    height={"auto"}
+                    height={"80vh"}
                     eventColor={"#ff2e1bff"}
                     selectable={true}
                     eventOverlap={false}
@@ -216,11 +303,10 @@ export default function Share({ user, setUser }: { user: any; setUser: (u: any) 
                     events={event_list}
                     dateClick={async (info) => {
                         createBox(info.jsEvent, info.dateStr)
-                        const getE = await getGroupEvent(String(lnk));
-                        const da = await getE.json()
-                        setEvent_list(da);
+                        const getE = await CalenGetEvent();
+                        // console.log(getE)
+                        setEvent_list(getE)
                         setSt(true)
-
                     }}
                     eventClick={hadleClickEvent}
                 />
@@ -254,7 +340,18 @@ export default function Share({ user, setUser }: { user: any; setUser: (u: any) 
                     <button id="delE">Delete</button>
                     <button id="delC">cancel</button>
                 </div>
+                <div id="link-con">
+                    <p id="lnk"></p>
+                    <button id="invbutt" onClick={async()=>{
+                        const res = await createShareLink()
+                        if(!res.ok) return
+                        const data = await res.json()
+                        const BASE_URL = window.location.origin
+                        document.getElementById('lnk')!.innerText = `${BASE_URL}/share/${data.link}`
+                    }}> create Invite</button>
+                </div>
             </div>
+                            
         </>
     )
 }
