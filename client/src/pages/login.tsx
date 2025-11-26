@@ -10,13 +10,16 @@ import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { FcGoogle } from "react-icons/fc";
-import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 
-export default function Login() {
+
+export default function Login({ user }: { user: any; }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleLocalLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,9 +38,19 @@ export default function Login() {
     }
   };
 
+  useEffect(() => {
+      if (user) {
+          toast.error("Already signed in!!");
+          navigate("/profile");
+          return;
+      }
+
+  }, [user, navigate]);
+
+      
   return (
 <div
-className="min-h-screen w-full flex items-center justify-center relative  bg-gradient-to-b from-slate-900 via-slate-900 to-slate-800"
+className="min-h-[93vh] w-full flex items-center justify-center relative  bg-gradient-to-b from-slate-900 via-slate-900 to-slate-800"
 style={{
   backgroundImage: `url('/background-login.jpg')`, 
 }}
