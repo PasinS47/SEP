@@ -1,5 +1,5 @@
 import { registerAccount, loginWithGoogle } from "@/lib/api";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import {
   Card,
@@ -14,7 +14,7 @@ import { Separator } from "@/components/ui/separator";
 import { FcGoogle } from "react-icons/fc";
 import { useNavigate } from "react-router-dom";
 
-export default function Register() {
+export default function Register({ user }: { user: any; }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -45,10 +45,19 @@ export default function Register() {
     }
   };
 
+  useEffect(() => {
+      if (user) {
+          toast.error("Already signed in!!");
+          navigate("/profile");
+          return;
+      }
+
+  }, [user, navigate]);
+
   return (
 <div
   className="
-    min-h-screen w-full flex items-center justify-center pt-15 relative 
+    min-h-[93vh] w-full flex items-center justify-center pt-15 relative 
     bg-gradient-to-b from-slate-900 via-slate-900 to-slate-800
   "
 >

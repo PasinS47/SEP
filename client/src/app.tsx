@@ -25,7 +25,15 @@ export default function App() {
         <Navbar user={user} setUser={setUser} setIsLoggedOut={setIsLoggedOut} />
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
+          <Route 
+            path="/login" 
+            element={
+              <Login
+              user={user}
+              // setIsLoggedOut={setIsLoggedOut}
+              />
+            } 
+          />
           <Route path="/auth/callback" element={<Callback reload={reload} />} />
           <Route
             path="/profile"
@@ -38,7 +46,7 @@ export default function App() {
               />
             }
           />
-          <Route path="/register" element={<Register />} />
+          <Route path="/register" element={<Register user={user} />} />
           <Route
             path="/calendar"
             element={<Calendar user={user} setUser={setUser} />}

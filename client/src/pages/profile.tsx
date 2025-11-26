@@ -63,7 +63,7 @@ export default function Profile({
   }
 
   return (
-    <div className="flex justify-center items-center min-h-[85vh] bg-background text-foreground">
+    <div className="flex justify-center items-center min-h-[93vh] text-foreground">
       <Card className="w-104 shadow-md border border-border bg-card">
         <CardHeader className="flex flex-col items-center space-y-2">
           <Avatar className="w-24 h-24">
