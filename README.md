@@ -3,8 +3,8 @@
 A full-stack web application built with **React + Vite + TypeScript (client)** and **ElysiaJS + Bun (server)**.
 Users can sign in with Google OAuth2, view their profile, and log out securely using JWT-based authentication.
 
-### Prerequisites
-Software required: Node.js, Bun
+### 📝 Prerequisites
+## Software required: 'Node.js', 'Bun'
 
 ---
 
