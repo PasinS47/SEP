@@ -4,10 +4,8 @@ A full-stack web application built with **React + Vite + TypeScript (client)** a
 Users can sign in with Google OAuth2, view their profile, and log out securely using JWT-based authentication.
 
 ### 📝 Prerequisites
-## Software required: 
-```bash
-Node.js, Bun
-```
+# Software required: Node.js, Bun
+
 ---
 
 ## 🧱 Tech Stack
