@@ -3,6 +3,9 @@
 A full-stack web application built with **React + Vite + TypeScript (client)** and **ElysiaJS + Bun (server)**.
 Users can sign in with Google OAuth2, view their profile, and log out securely using JWT-based authentication.
 
+### Prerequisites
+Software required: Node.js, Bun
+
 ---
 
 ## 🧱 Tech Stack
@@ -13,7 +16,7 @@ Users can sign in with Google OAuth2, view their profile, and log out securely u
 | Backend   | ElysiaJS                    |
 | Auth      | Google OAuth 2.0            |
 | Session   | Cookie + JWT                |
-| Database  | (temporary) in-memory `Map` |
+| Database  | MySQL Server version	9.5.0 |
 
 ---
 
@@ -74,6 +77,12 @@ Then open: http://localhost:5173
 
 ---
 
+### ▶️ Import Database
+**Start**
+```bash
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
+
 ### 🔐 Auth Flow Overview
 1. User clicks “Sign in with Google”
 2. Redirects to Google OAuth consent screen
@@ -93,10 +102,12 @@ student-event-planner/
 │  │  ├─ components/     # Navbar
 │  │  └─ app.tsx, main.tsx
 │  └─ .env
-├─ backend/
+├─ server/
 │  ├─ src/
-│  │  └─ index.ts        # main Elysia server
+│  │  ├─ index.ts        # main Elysia server
+│  │  ├─ sql/            # import DB
 │  └─ .env
+├─ database_schema_and_data.sql
 └─ README.md
 ```
 
